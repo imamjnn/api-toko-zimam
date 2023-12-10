@@ -1,0 +1,62 @@
+import bcrypt from 'bcrypt';
+import db from '../../config/db';
+import jwt from 'jsonwebtoken';
+
+export const generatePassword = (req, res) => {
+  const {password} = req.body;
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  res.json({status: 1, hash});
+};
+
+export const checkUsername = async (req, res) => {
+  const {username} = req.query;
+  try {
+    const result = await db('user').where({username}).select('username');
+    res.json({data: result});
+  } catch (err) {
+    console.log(err);
+    res.json({result: 'err'});
+  }
+};
+
+export const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+      if (err) {
+        res.sendStatus(403);
+        return res.json({status: 0, message: 'Invalid Authenticate'});
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+    res.json({status: 0, message: 'Invalid Authenticate'});
+  }
+};
+
+export const authLogin = async (req, res) => {
+  const {username, password} = req.body;
+  try {
+    const user = await db('user').where({username}).first();
+    if (!user) {
+      res.json({status: 0, message: 'Incorrect username or password'});
+    } else {
+      const checkPass = bcrypt.compareSync(password, user.password);
+      const payload = {id: user.id, username: user.username, role: user.role};
+      if (checkPass) {
+        const accessToken = jwt.sign(payload, process.env.SECRET_KEY);
+        const {fullname, role, id, avatar} = user;
+        res.json({status: 1, accessToken, user: {fullname, role, id, avatar}});
+      } else {
+        res.json({status: 0, message: 'Incorrect username or password'});
+      }
+    }
+  } catch (err) {
+    console.log('maneror', err);
+    res.json({message: 'Error'});
+  }
+};
