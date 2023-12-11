@@ -3,6 +3,7 @@ import {authLogin, authenticateJWT, checkUsername, generatePassword} from './mod
 import {createCategory, getCategory} from './models/category';
 import {createProduct, getProduct, updateProduct, uploadPhoto} from './models/product';
 import upload from './utils/upload';
+import {getProductUnit} from './models/productUnit';
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ router.post('/login', authLogin);
 
 router.get('/categories', getCategory);
 router.post('/category/add', authenticateJWT, createCategory);
+
+router.get('/product-unit', getProductUnit);
 
 router.get('/products', getProduct);
 router.post('/product/add', createProduct);
