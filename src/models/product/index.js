@@ -11,7 +11,10 @@ export const getProduct = async (req, res) => {
         'product.name',
         'c.name as category',
         'pu.name as unit',
-        'pp.normal_price',
+        // 'pp.normal_price',
+        db.raw(
+          'JSON_OBJECT("normal_price", pp.normal_price, "retail_price", pp.retail_price, "other_price", pp.other_price, "normal_price_discount", pp.normal_price_discount, "retail_price_discount", pp.retail_price_discount, "other_price_discount", pp.other_price_discount) prices',
+        ),
         'product.photo',
         'product.stock',
         'product.stock_status',
@@ -20,6 +23,7 @@ export const getProduct = async (req, res) => {
       .leftJoin('category as c', 'product.category_id', 'c.id')
       .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
       .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
+      // .groupBy('product.id')
       .whereILike('product.name', `%${search}%`)
       .orderBy(orderBy, 'desc')
       .offset(offset)
@@ -28,6 +32,17 @@ export const getProduct = async (req, res) => {
       .whereILike('product.name', `%${search}%`)
       .count('* as total')
       .first();
+    const data = result.map(a => {
+      const pp = JSON.parse(a.prices);
+      return {
+        ...a,
+        prices: [
+          {type: 'normal_price', price: pp.normal_price, discount: pp.normal_price_discount},
+          {type: 'retail_price', price: pp.retail_price, discount: pp.retail_price_discount},
+          {type: 'other_price', price: pp.other_price, discount: pp.other_price_discount},
+        ],
+      };
+    });
     res.json({
       status: 1,
       message: 'success',
@@ -35,7 +50,7 @@ export const getProduct = async (req, res) => {
       page: Number(page),
       totalPage: Math.ceil(Number(count.total) / Number(limit)),
       limit: Number(limit),
-      data: result,
+      data,
     });
   } catch (err) {
     console.log(err);
