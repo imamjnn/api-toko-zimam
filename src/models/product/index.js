@@ -15,8 +15,10 @@ export const getProduct = async (req, res) => {
         db.raw(
           'JSON_OBJECT("normal_price", pp.normal_price, "retail_price", pp.retail_price, "other_price", pp.other_price, "normal_price_discount", pp.normal_price_discount, "retail_price_discount", pp.retail_price_discount, "other_price_discount", pp.other_price_discount) prices',
         ),
+        'pp.purchase_price',
         'product.photo',
         'product.stock',
+        'product.stock_limit',
         'product.stock_status',
         'product.created',
       )
@@ -85,6 +87,7 @@ export const createProduct = async (req, res) => {
     time_promotion,
     photo,
     stock,
+    stock_limit,
     stock_status,
     purchase_price,
     normal_price,
@@ -105,6 +108,7 @@ export const createProduct = async (req, res) => {
         time_promotion,
         photo,
         stock,
+        stock_limit,
         stock_status,
         created: moment().toDate(),
         updated: moment().toDate(),
@@ -150,6 +154,7 @@ export const updateProduct = async (req, res) => {
     time_promotion,
     photo,
     stock,
+    stock_limit,
     stock_status,
     purchase_price,
     normal_price,
@@ -169,6 +174,7 @@ export const updateProduct = async (req, res) => {
         time_promotion,
         photo,
         stock,
+        stock_limit,
         stock_status,
         updated: moment().toDate(),
       })
