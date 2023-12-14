@@ -9,6 +9,12 @@ export const createProductTransaction = async (req, res) => {
         return {...a, created: moment().toDate(), updated: moment().toDate()};
       }),
     );
+    products.map(async pro => {
+      const te = await db('product')
+        .update({stock: db.raw(`?? - ${pro.stock_reduced}`, ['stock'])})
+        .where('product_code', pro.product_code);
+      console.log(te);
+    });
     console.log(result);
     if (result.length !== 0) {
       res.json({
