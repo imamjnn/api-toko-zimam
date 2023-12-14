@@ -5,6 +5,7 @@ import {createProduct, getProduct, updateProduct, uploadPhoto} from './models/pr
 import upload from './utils/upload';
 import {getProductUnit} from './models/productUnit';
 import {createProductTransaction} from './models/transaction/productTransaction';
+import {createPurchaseTransaction} from './models/transaction/purchaseTransaction';
 
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router.post('/product/edit', updateProduct);
 router.post('/upload-photo', upload.single('photo'), uploadPhoto);
 
 router.post('/product-transaction/add', createProductTransaction);
+router.post('/purchase-transaction/add', createPurchaseTransaction);
 
 export default router;
