@@ -45,3 +45,29 @@ export const createPurchaseTransaction = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const getPurchaseTransaction = async (req, res) => {
+  try {
+    const result = await db('purchase_transaction as pu')
+      .select(
+        'pu.*',
+        'us.fullname as cashier_name',
+        'me.name as member_name',
+        db.raw('(pu.nominal_cash - pu.total_price) as total_return'),
+        db.raw('(pu.total_price - pu.total_discount) as grand_total'),
+      )
+      .leftJoin('user as us', 'pu.user_id', 'us.id')
+      .leftJoin('member as me', 'pu.member_id', 'me.id');
+    console.log(result);
+    if (result.length !== 0) {
+      res.json({
+        status: 1,
+        message: 'success',
+        data: result,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'error'});
+  }
+};
