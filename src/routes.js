@@ -9,6 +9,7 @@ import {
   createPurchaseTransaction,
   getPurchaseTransaction,
 } from './models/transaction/purchaseTransaction';
+import {createUser, getUser} from './models/user';
 
 const router = express.Router();
 
@@ -34,5 +35,8 @@ router.post('/product-transaction/add', authenticateJWT, createProductTransactio
 
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
 router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
+
+router.get('/users', authenticateJWT, getUser);
+router.post('/user/add', authenticateJWT, createUser);
 
 export default router;
