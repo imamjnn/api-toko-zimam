@@ -49,14 +49,19 @@ export const authLogin = async (req, res) => {
       const payload = {id: user.id, username: user.username, role: user.role};
       if (checkPass) {
         const accessToken = jwt.sign(payload, process.env.SECRET_KEY);
-        const {fullname, role, id, avatar} = user;
-        res.json({status: 1, accessToken, user: {fullname, role, id, avatar}});
+        const {fullname, role, id, avatar, address, phone, gender} = user;
+        res.json({
+          status: 1,
+          message: 'success',
+          accessToken,
+          user: {fullname, role, id, avatar, address, phone, gender},
+        });
       } else {
         res.json({status: 0, message: 'Incorrect username or password'});
       }
     }
   } catch (err) {
     console.log('maneror', err);
-    res.json({message: 'Error'});
+    res.json({status: 0, message: 'Error'});
   }
 };

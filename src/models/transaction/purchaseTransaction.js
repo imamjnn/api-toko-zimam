@@ -60,6 +60,7 @@ export const getPurchaseTransaction = async (req, res) => {
       .leftJoin('user as us', 'pu.user_id', 'us.id')
       .leftJoin('member as me', 'pu.member_id', 'me.id')
       .leftJoin('product_transaction as po', 'pu.transaction_code', 'po.transaction_code')
+      .orderBy('pu.created', 'desc')
       .groupBy('pu.id');
     console.log(result);
     if (result.length !== 0) {
