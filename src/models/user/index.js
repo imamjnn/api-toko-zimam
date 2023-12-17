@@ -1,5 +1,6 @@
 import moment from 'moment';
 import db from '../../config/db';
+import {hashPassword} from '../../utils/formatter';
 
 export const getUser = async (req, res) => {
   const {search = '', limit = 10} = req.query;
@@ -29,35 +30,41 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
   const {fullname, username, password, address, phone, gender, avatar, role} = req.body;
   try {
-    const result = await db('user')
-      .insert({
-        fullname,
-        username,
-        nik: '',
-        password,
-        address,
-        phone,
-        gender,
-        avatar,
-        role,
-        created: moment().toDate(),
-        updated: moment().toDate(),
-      })
-      .returning('id');
-    if (result.length !== 0) {
-      const userId = result[0];
-      const newNik = `${moment().format('YY')}${String(userId).padStart(4, 0)}`;
-      // update product_code
-      await db('user').update({nik: newNik}).where('id', userId);
-      const resultUser = await db('user').where('id', userId).first();
-      console.log(resultUser);
-      res.json({
-        status: 1,
-        message: 'success',
-        data: {fullname: resultUser.fullname, username: resultUser.username, nik: resultUser.nik},
-      });
+    const checkUsername = await db('user').where('username', username).first();
+    console.log('checkUsername', checkUsername, hashPassword(password));
+    if (checkUsername && checkUsername.fullname) {
+      res.json({status: 0, message: 'Username sudah ada'});
     } else {
-      res.json({status: 0, message: 'error'});
+      const result = await db('user')
+        .insert({
+          fullname,
+          username,
+          nik: '',
+          password: hashPassword(password),
+          address,
+          phone,
+          gender,
+          avatar,
+          role,
+          created: moment().toDate(),
+          updated: moment().toDate(),
+        })
+        .returning('id');
+      if (result.length !== 0) {
+        const userId = result[0];
+        const newNik = `${moment().format('YY')}${String(userId).padStart(4, 0)}`;
+        // update product_code
+        await db('user').update({nik: newNik}).where('id', userId);
+        const resultUser = await db('user').where('id', userId).first();
+        console.log(resultUser);
+        res.json({
+          status: 1,
+          message: 'success',
+          data: {fullname: resultUser.fullname, username: resultUser.username, nik: resultUser.nik},
+        });
+      } else {
+        res.json({status: 0, message: 'error'});
+      }
     }
   } catch (err) {
     console.log(err);
