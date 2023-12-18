@@ -10,6 +10,7 @@ import {
   getPurchaseTransaction,
 } from './models/transaction/purchaseTransaction';
 import {createUser, getUser} from './models/user';
+import {createMember, getMember} from './models/member';
 
 const router = express.Router();
 
@@ -38,5 +39,8 @@ router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
 
 router.get('/users', authenticateJWT, getUser);
 router.post('/user/add', authenticateJWT, createUser);
+
+router.get('/members', authenticateJWT, getMember);
+router.post('/member/add', authenticateJWT, createMember);
 
 export default router;

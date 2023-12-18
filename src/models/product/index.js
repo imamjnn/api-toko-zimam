@@ -7,8 +7,7 @@ export const getProduct = async (req, res) => {
   try {
     const result = await db('product')
       .select(
-        'product.product_code',
-        'product.name',
+        'product.*',
         'c.name as category',
         'pu.name as unit',
         // 'pp.normal_price',
@@ -16,11 +15,6 @@ export const getProduct = async (req, res) => {
           'JSON_OBJECT("normal_price", pp.normal_price, "retail_price", pp.retail_price, "other_price", pp.other_price, "normal_price_discount", pp.normal_price_discount, "retail_price_discount", pp.retail_price_discount, "other_price_discount", pp.other_price_discount) prices',
         ),
         'pp.purchase_price',
-        'product.photo',
-        'product.stock',
-        'product.stock_limit',
-        'product.stock_status',
-        'product.created',
       )
       .leftJoin('category as c', 'product.category_id', 'c.id')
       .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
