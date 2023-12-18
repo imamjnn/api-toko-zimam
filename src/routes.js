@@ -11,6 +11,7 @@ import {
 } from './models/transaction/purchaseTransaction';
 import {createUser, getUser} from './models/user';
 import {createMember, getMember} from './models/member';
+import {deleteTransaction, getDetailTransaction} from './models/transaction/detailTransaction';
 
 const router = express.Router();
 
@@ -30,12 +31,14 @@ router.get('/product-unit', authenticateJWT, getProductUnit);
 router.get('/products', authenticateJWT, getProduct);
 router.post('/product/add', authenticateJWT, createProduct);
 router.post('/product/edit', authenticateJWT, updateProduct);
-router.post('/upload-photo', upload.single('photo'), uploadPhoto);
+router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhoto);
 
 router.post('/product-transaction/add', authenticateJWT, createProductTransaction);
 
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
 router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
+router.get('/transaction', authenticateJWT, getDetailTransaction);
+router.delete('/transaction/delete', authenticateJWT, deleteTransaction);
 
 router.get('/users', authenticateJWT, getUser);
 router.post('/user/add', authenticateJWT, createUser);

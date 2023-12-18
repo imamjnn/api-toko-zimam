@@ -53,9 +53,11 @@ export const getPurchaseTransaction = async (req, res) => {
         'pu.*',
         'us.fullname as cashier_name',
         'me.name as member_name',
-        db.raw('(pu.nominal_cash - pu.total_price) as total_return'),
+        db.raw('(pu.nominal_cash - (pu.total_price - pu.total_discount)) as total_return'),
         db.raw('(pu.total_price - pu.total_discount) as grand_total'),
-        db.raw('sum(po.sell_price) - sum(po.purchase_price) as total_purchase_price'),
+        db.raw('sum(po.purchase_price) as total_purchase_price'),
+        db.raw('sum(po.sell_price) as total_sell_price'),
+        db.raw('(pu.total_price - pu.total_discount) - sum(po.purchase_price) as total_profit'),
       )
       .leftJoin('user as us', 'pu.user_id', 'us.id')
       .leftJoin('member as me', 'pu.member_id', 'me.id')
@@ -63,13 +65,11 @@ export const getPurchaseTransaction = async (req, res) => {
       .orderBy('pu.created', 'desc')
       .groupBy('pu.id');
     console.log(result);
-    if (result.length !== 0) {
-      res.json({
-        status: 1,
-        message: 'success',
-        data: result,
-      });
-    }
+    res.json({
+      status: 1,
+      message: 'success',
+      data: result,
+    });
   } catch (err) {
     console.log(err);
     res.json({status: 0, message: 'error'});
