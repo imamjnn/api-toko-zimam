@@ -1,5 +1,6 @@
 import moment from 'moment';
 import db from '../../config/db';
+import {getUserInfo} from '../../utils/formatter';
 
 export const getProduct = async (req, res) => {
   const {search = '', page = 1, limit = 20, orderBy = 'created'} = req.query;
@@ -21,11 +22,13 @@ export const getProduct = async (req, res) => {
       .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
       // .groupBy('product.id')
       .whereILike('product.name', `%${search}%`)
+      .orWhereILike('product.product_code', `%${search}%`)
       .orderBy(orderBy, 'desc')
       .offset(offset)
       .limit(limit);
     const count = await db('product')
       .whereILike('product.name', `%${search}%`)
+      .orWhereILike('product.product_code', `%${search}%`)
       .count('* as total')
       .first();
     const data = result.map(a => {
@@ -91,6 +94,7 @@ export const createProduct = async (req, res) => {
     retail_price_discount,
     other_price_discount,
   } = req.body;
+  const user = getUserInfo(req.headers.authorization);
   try {
     // save product
     const productResult = await db('product')
@@ -104,6 +108,7 @@ export const createProduct = async (req, res) => {
         stock,
         stock_limit,
         stock_status,
+        user_id: user.id,
         created: moment().toDate(),
         updated: moment().toDate(),
       })
