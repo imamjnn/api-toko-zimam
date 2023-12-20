@@ -123,6 +123,7 @@ export const uploadPhoto = (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
+  const user = getUserInfo(req.headers.authorization);
   const {
     name,
     category_id,
@@ -131,7 +132,7 @@ export const createProduct = async (req, res) => {
     photo,
     stock,
     stock_limit,
-    stock_status,
+    stock_opname,
     purchase_price,
     normal_price,
     retail_price,
@@ -140,7 +141,6 @@ export const createProduct = async (req, res) => {
     retail_price_discount,
     other_price_discount,
   } = req.body;
-  const user = getUserInfo(req.headers.authorization);
   try {
     // save product
     const productResult = await db('product')
@@ -153,7 +153,7 @@ export const createProduct = async (req, res) => {
         photo,
         stock,
         stock_limit,
-        stock_status,
+        stock_opname,
         user_id: user.id,
         created: moment().toDate(),
         updated: moment().toDate(),
@@ -208,7 +208,7 @@ export const updateProduct = async (req, res) => {
     photo,
     stock,
     stock_limit,
-    stock_status,
+    stock_opname,
     purchase_price,
     normal_price,
     retail_price,
@@ -228,7 +228,7 @@ export const updateProduct = async (req, res) => {
         photo,
         stock,
         stock_limit,
-        stock_status,
+        stock_opname,
         updated: moment().toDate(),
       })
       .where('id', id);
