@@ -57,6 +57,52 @@ export const getProduct = async (req, res) => {
   }
 };
 
+export const getDetailProduct = async (req, res) => {
+  const {id} = req.query;
+  try {
+    const result = await db('product')
+      .select(
+        'product.*',
+        'c.name as category',
+        'pu.name as unit',
+        db.raw(
+          'JSON_OBJECT("normal_price", pp.normal_price, "retail_price", pp.retail_price, "other_price", pp.other_price, "normal_price_discount", pp.normal_price_discount, "retail_price_discount", pp.retail_price_discount, "other_price_discount", pp.other_price_discount) prices',
+        ),
+        'pp.purchase_price',
+      )
+      .leftJoin('category as c', 'product.category_id', 'c.id')
+      .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
+      .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
+      .where('product.id', id)
+      .first();
+
+    const pp = JSON.parse(result.prices);
+    res.json({
+      status: 1,
+      message: 'success',
+      data: {
+        ...result,
+        prices: [
+          {
+            type: 'normal_price',
+            price: pp.normal_price,
+            discount: pp.normal_price_discount,
+          },
+          {
+            type: 'retail_price',
+            price: pp.retail_price,
+            discount: pp.retail_price_discount,
+          },
+          {type: 'other_price', price: pp.other_price, discount: pp.other_price_discount},
+        ],
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'err'});
+  }
+};
+
 export const uploadPhoto = (req, res) => {
   console.log(req.body);
   console.log(req.file);
@@ -130,6 +176,14 @@ export const createProduct = async (req, res) => {
         normal_price_discount,
         retail_price_discount,
         other_price_discount,
+        created: moment().toDate(),
+      });
+      // save restock
+      const restockResult = await db('restock').insert({
+        product_id: productId,
+        type: 'increment',
+        stock,
+        user_id: user.id,
         created: moment().toDate(),
       });
       res.json({

@@ -1,7 +1,13 @@
 import express from 'express';
 import {authLogin, authenticateJWT, checkUsername, generatePassword} from './models/auth';
 import {createCategory, getCategory} from './models/category';
-import {createProduct, getProduct, updateProduct, uploadPhoto} from './models/product';
+import {
+  createProduct,
+  getDetailProduct,
+  getProduct,
+  updateProduct,
+  uploadPhoto,
+} from './models/product';
 import upload from './utils/upload';
 import {getProductUnit} from './models/productUnit';
 import {createProductTransaction} from './models/transaction/productTransaction';
@@ -12,6 +18,7 @@ import {
 import {createUser, getUser} from './models/user';
 import {createMember, getMember} from './models/member';
 import {deleteTransaction, getDetailTransaction} from './models/transaction/detailTransaction';
+import {createRestock, deleteRestock} from './models/product/productRestock';
 
 const router = express.Router();
 
@@ -29,6 +36,7 @@ router.post('/category/add', authenticateJWT, createCategory);
 router.get('/product-unit', authenticateJWT, getProductUnit);
 
 router.get('/products', authenticateJWT, getProduct);
+router.get('/product/detail', authenticateJWT, getDetailProduct);
 router.post('/product/add', authenticateJWT, createProduct);
 router.post('/product/edit', authenticateJWT, updateProduct);
 router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhoto);
@@ -45,5 +53,8 @@ router.post('/user/add', authenticateJWT, createUser);
 
 router.get('/members', authenticateJWT, getMember);
 router.post('/member/add', authenticateJWT, createMember);
+
+router.post('/restock/add', authenticateJWT, createRestock);
+router.delete('/restock/delete', authenticateJWT, deleteRestock);
 
 export default router;
