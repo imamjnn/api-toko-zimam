@@ -19,6 +19,7 @@ import {createUser, getUser} from './models/user';
 import {createMember, getMember} from './models/member';
 import {deleteTransaction, getDetailTransaction} from './models/transaction/detailTransaction';
 import {createRestock, deleteRestock} from './models/product/productRestock';
+import {createUserPerms} from './models/user/userPerms';
 
 const router = express.Router();
 
@@ -52,6 +53,7 @@ router.delete('/transaction/delete', authenticateJWT, deleteTransaction);
 
 router.get('/users', authenticateJWT, getUser);
 router.post('/user/add', authenticateJWT, createUser);
+router.post('/user/perms/add', authenticateJWT, createUserPerms);
 
 router.get('/members', authenticateJWT, getMember);
 router.post('/member/add', authenticateJWT, createMember);

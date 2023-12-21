@@ -45,8 +45,13 @@ export const authLogin = async (req, res) => {
     if (!user) {
       res.json({status: 0, message: 'Incorrect username or password'});
     } else {
+      const perms = await db('user_perms')
+        .select('user_perms.hash')
+        .where('user_id', user.id)
+        .first();
       const checkPass = bcrypt.compareSync(password, user.password);
       const payload = {id: user.id, username: user.username, role: user.role};
+      console.log(user);
       if (checkPass) {
         const accessToken = jwt.sign(payload, process.env.SECRET_KEY);
         const {fullname, role, id, avatar, address, phone, gender} = user;
@@ -54,7 +59,16 @@ export const authLogin = async (req, res) => {
           status: 1,
           message: 'success',
           accessToken,
-          user: {fullname, role, id, avatar, address, phone, gender},
+          user: {
+            fullname,
+            role,
+            id,
+            avatar,
+            address,
+            phone,
+            gender,
+            perms: perms ? JSON.parse(perms.hash) : [],
+          },
         });
       } else {
         res.json({status: 0, message: 'Incorrect username or password'});
