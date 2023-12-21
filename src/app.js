@@ -8,7 +8,7 @@ import path from 'path';
 dotenv.config();
 
 const app = express();
-const port = 2023;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(bodyParser.json());
