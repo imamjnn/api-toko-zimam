@@ -29,3 +29,26 @@ export const getCategory = async (req, res) => {
     res.json({status: 0, message: 'err'});
   }
 };
+
+export const updateCategory = async (req, res) => {
+  const {id} = req.query;
+  const {name} = req.body;
+  try {
+    const result = await db('category').where('id', id).update({name});
+    res.json({status: 1, message: 'success', data: result});
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'err'});
+  }
+};
+
+export const deleteCategory = async (req, res) => {
+  const {id} = req.query;
+  try {
+    const result = await db('category').where('id', id).del();
+    res.json({status: 1, message: 'success', data: result});
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'err'});
+  }
+};

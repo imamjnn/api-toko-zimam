@@ -18,6 +18,7 @@ export const getUser = async (req, res) => {
         'user.created',
       )
       .whereILike('fullname', `%${search}%`)
+      .where('status', 'active')
       .limit(limit)
       .orderBy('fullname', 'asc');
     res.json({status: 1, message: 'success', data: result});
@@ -46,6 +47,7 @@ export const createUser = async (req, res) => {
           gender,
           avatar,
           role,
+          status: 'active',
           created: moment().toDate(),
           updated: moment().toDate(),
         })

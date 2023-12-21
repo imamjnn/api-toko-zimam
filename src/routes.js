@@ -1,6 +1,6 @@
 import express from 'express';
 import {authLogin, authenticateJWT, checkUsername, generatePassword} from './models/auth';
-import {createCategory, getCategory} from './models/category';
+import {createCategory, deleteCategory, getCategory, updateCategory} from './models/category';
 import {
   createProduct,
   getDetailProduct,
@@ -23,7 +23,7 @@ import {createRestock, deleteRestock} from './models/product/productRestock';
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.json({message: 'hi!'});
+  res.json({message: 'api toko zimam'});
 });
 
 router.post('/generate-pass', generatePassword);
@@ -32,6 +32,8 @@ router.post('/login', authLogin);
 
 router.get('/categories', authenticateJWT, getCategory);
 router.post('/category/add', authenticateJWT, createCategory);
+router.put('/category/update', authenticateJWT, updateCategory);
+router.delete('/category/delete', authenticateJWT, deleteCategory);
 
 router.get('/product-unit', authenticateJWT, getProductUnit);
 
