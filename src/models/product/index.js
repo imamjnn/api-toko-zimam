@@ -11,7 +11,6 @@ export const getProduct = async (req, res) => {
         'product.*',
         'c.name as category',
         'pu.name as unit',
-        // 'pp.normal_price',
         db.raw(
           'JSON_OBJECT("normal_price", pp.normal_price, "retail_price", pp.retail_price, "other_price", pp.other_price, "normal_price_discount", pp.normal_price_discount, "retail_price_discount", pp.retail_price_discount, "other_price_discount", pp.other_price_discount) prices',
         ),
@@ -20,15 +19,22 @@ export const getProduct = async (req, res) => {
       .leftJoin('category as c', 'product.category_id', 'c.id')
       .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
       .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
-      // .groupBy('product.id')
-      .whereILike('product.name', `%${search}%`)
-      .orWhereILike('product.product_code', `%${search}%`)
+      .where('product.status', 1)
+      .where(a =>
+        a
+          .orWhereILike('product.name', `%${search}%`)
+          .orWhereILike('product.product_code', `%${search}%`),
+      )
       .orderBy(orderBy, 'desc')
       .offset(offset)
       .limit(limit);
     const count = await db('product')
-      .whereILike('product.name', `%${search}%`)
-      .orWhereILike('product.product_code', `%${search}%`)
+      .where('product.status', 1)
+      .where(a =>
+        a
+          .orWhereILike('product.name', `%${search}%`)
+          .orWhereILike('product.product_code', `%${search}%`),
+      )
       .count('* as total')
       .first();
     const data = result.map(a => {
