@@ -3,13 +3,18 @@ import db from '../../config/db';
 
 export const createCategory = async (req, res) => {
   const {name} = req.body;
-  console.log(req.headers.authorization);
   try {
-    const result = await db('category').insert({
-      name,
-      created: moment().toDate(),
-    });
-    res.json({status: 1, message: 'success', id: result[0]});
+    const checkData = await db('category').select('*').where('name', name).first();
+    console.log(checkData);
+    if (!checkData) {
+      const result = await db('category').insert({
+        name,
+        created: moment().toDate(),
+      });
+      res.json({status: 1, message: 'success', id: result[0]});
+    } else {
+      res.json({status: 0, message: 'Kategori sudah ada, coba cek kembali'});
+    }
   } catch (err) {
     console.log(err);
     res.json({status: 0, message: 'error'});
