@@ -107,16 +107,16 @@ export const uploadPhoto = (req, res) => {
   console.log(req.body);
   console.log(req.file);
   if (!req.file) {
-    console.log('No file received');
+    console.log('failed uploadPhoto');
     return res.send({
       status: 0,
       message: 'failed',
     });
   } else {
-    console.log('file received');
+    console.log('success uploadPhoto');
     return res.send({
       status: 1,
-      message: 'Success upload photo!',
+      message: 'success',
       data: req.file,
     });
   }
@@ -143,22 +143,20 @@ export const createProduct = async (req, res) => {
   } = req.body;
   try {
     // save product
-    const productResult = await db('product')
-      .insert({
-        name,
-        product_code: 0,
-        category_id,
-        product_unit_id,
-        time_promotion,
-        photo,
-        stock,
-        stock_limit,
-        stock_opname,
-        user_id: user.id,
-        created: moment().toDate(),
-        updated: moment().toDate(),
-      })
-      .returning('id');
+    const productResult = await db('product').insert({
+      name,
+      product_code: 0,
+      category_id,
+      product_unit_id,
+      time_promotion,
+      photo,
+      stock,
+      stock_limit,
+      stock_opname,
+      user_id: user.id,
+      created: moment().toDate(),
+      updated: moment().toDate(),
+    });
     if (productResult.length !== 0) {
       const productId = productResult[0];
       const newCode = `${category_id}${product_unit_id}${String(productId).padStart(6, 0)}`;
@@ -186,14 +184,16 @@ export const createProduct = async (req, res) => {
         user_id: user.id,
         created: moment().toDate(),
       });
+      console.log('success', updateCode, priceResult, restockResult);
       res.json({
         status: 1,
         message: 'success',
         data: {product_id: productId, product_code: newCode},
       });
     }
+    console.log('success createProduct', productResult);
   } catch (err) {
-    console.log(err);
+    console.log('failed createProduct', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -244,10 +244,10 @@ export const updateProduct = async (req, res) => {
         other_price_discount,
       })
       .where('product_id', id);
-    console.log(productResult, priceResult);
+    console.log('success updateProduct', productResult, priceResult);
     res.json({status: 1, message: 'success'});
   } catch (err) {
-    console.log(err);
+    console.log('failed updateProduct', err);
     res.json({status: 0, message: 'error'});
   }
 };
