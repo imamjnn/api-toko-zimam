@@ -48,8 +48,6 @@ export const createUser = async (req, res) => {
           avatar,
           role,
           status: 'active',
-          created: moment().toDate(),
-          updated: moment().toDate(),
         })
         .returning('id');
       if (result.length !== 0) {
