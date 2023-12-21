@@ -165,7 +165,9 @@ export const createProduct = async (req, res) => {
     });
     if (productResult.length !== 0) {
       const productId = productResult[0];
-      const newCode = `${category_id}${product_unit_id}${String(productId).padStart(6, 0)}`;
+      const newCode = `${product_unit_id}${String(category_id).padStart(2, 0)}${String(
+        productId,
+      ).padStart(6, 0)}`;
       // update product_code
       const updateCode = await db('product')
         .update({product_code: newCode})

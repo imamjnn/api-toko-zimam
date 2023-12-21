@@ -5,18 +5,18 @@ export const createCategory = async (req, res) => {
   const {name} = req.body;
   try {
     const checkData = await db('category').select('*').where('name', name).first();
-    console.log(checkData);
     if (!checkData) {
       const result = await db('category').insert({
         name,
         created: moment().toDate(),
       });
+      console.log('success createCategory');
       res.json({status: 1, message: 'success', id: result[0]});
     } else {
       res.json({status: 0, message: 'Kategori sudah ada, coba cek kembali'});
     }
   } catch (err) {
-    console.log(err);
+    console.log('failed createCategory', err);
     res.json({status: 0, message: 'error'});
   }
 };
