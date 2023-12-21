@@ -58,7 +58,13 @@ export const createUser = async (req, res) => {
         // update product_code
         await db('user').update({nik: newNik}).where('id', userId);
         const resultUser = await db('user').where('id', userId).first();
-        console.log(resultUser);
+        // save user perms
+        const resultPerms = await db('perms').where('role_name', role);
+        const savePerms = await db('user_perms').insert({
+          user_id: userId,
+          hash: JSON.stringify(resultPerms.map(a => a.name)),
+        });
+        console.log(resultUser, savePerms);
         res.json({
           status: 1,
           message: 'success',
