@@ -44,6 +44,8 @@ export const authLogin = async (req, res) => {
     const user = await db('user').where({username}).first();
     if (!user) {
       res.json({status: 0, message: 'Incorrect username or password'});
+    } else if (user.status !== 'active') {
+      res.json({status: 0, message: 'User ini sudah tidak aktif'});
     } else {
       const perms = await db('user_perms')
         .select('user_perms.hash')

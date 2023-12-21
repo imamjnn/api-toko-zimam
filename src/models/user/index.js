@@ -19,6 +19,7 @@ export const getUser = async (req, res) => {
       )
       .whereILike('fullname', `%${search}%`)
       .where('status', 'active')
+      .whereNot('role', '=', 'admin')
       .limit(limit)
       .orderBy('fullname', 'asc');
     res.json({status: 1, message: 'success', data: result});
