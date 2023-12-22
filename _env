@@ -1,0 +1,9 @@
+APP_ENV=dev
+SECRET_KEY=imamjinani
+
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASS=Imamjinani@90
+DB_NAME=db_toko_zimam
+
+PORT=2024

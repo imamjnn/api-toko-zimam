@@ -47,6 +47,8 @@ export const createPurchaseTransaction = async (req, res) => {
 };
 
 export const getPurchaseTransaction = async (req, res) => {
+  const {search = '', page = 1, limit = 20} = req.query;
+  const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const result = await db('purchase_transaction as pu')
       .select(
@@ -62,8 +64,11 @@ export const getPurchaseTransaction = async (req, res) => {
       .leftJoin('user as us', 'pu.user_id', 'us.id')
       .leftJoin('member as me', 'pu.member_id', 'me.id')
       .leftJoin('product_transaction as po', 'pu.transaction_code', 'po.transaction_code')
+      .whereILike('pu.transaction_code', `%${search}%`)
       .orderBy('pu.created', 'desc')
-      .groupBy('pu.id');
+      .groupBy('pu.id')
+      .offset(offset)
+      .limit(limit);
     console.log(result);
     res.json({
       status: 1,
