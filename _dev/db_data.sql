@@ -1,6 +1,6 @@
 TRUNCATE `user`;
 INSERT INTO `user` ( `fullname`, `username`, `password`, `nik`, `address`, `phone`, `gender`, `status`, `role` ) VALUES
-    ( 'Admin', 'admin', '$2y$10$Fyny0EXBwGlzPYrr/wSOL.ScgC0B6Irgyttuc/w9kkMwaAd2Vk/l6', '230001', 'Bumijawa', '0878787878', 'male', 'active', 'admin' );
+    ( 'Admin', 'admin', '$2b$10$aWK9rXlgzLDu7TIliCI.g.K2DlVtTPYpuzxqNp1tdMRXG13824QVi', '230001', 'Bumijawa', '0878787878', 'male', 'active', 'admin' );
 
 TRUNCATE `product_unit`;
 INSERT INTO product_unit (`id`, `name`) VALUES (1, 'Lusin'), (2, 'Kodi'), (3, 'Satuan');
