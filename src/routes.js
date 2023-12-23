@@ -38,6 +38,7 @@ router.delete('/category/delete', authenticateJWT, deleteCategory);
 
 router.get('/product-unit', authenticateJWT, getProductUnit);
 
+router.get('/product/barcode', getProduct);
 router.get('/products', authenticateJWT, getProduct);
 router.get('/product/detail', authenticateJWT, getDetailProduct);
 router.post('/product/add', authenticateJWT, createProduct);
