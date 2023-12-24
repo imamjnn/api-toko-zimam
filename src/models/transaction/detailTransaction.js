@@ -56,7 +56,7 @@ export const deleteTransaction = async (req, res) => {
   try {
     // del purchase_transaction
     const delPu = await db('purchase_transaction as pu').where('pu.transaction_code', code).del();
-    // del product_transaction
+    // update product
     const resultPo = await db('product_transaction as po')
       .select('*')
       .where('po.transaction_code', code);

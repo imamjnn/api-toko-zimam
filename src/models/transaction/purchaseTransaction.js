@@ -69,10 +69,12 @@ export const getPurchaseTransaction = async (req, res) => {
       .groupBy('pu.id')
       .offset(offset)
       .limit(limit);
+    const countAll = await db('purchase_transaction').count('* as total').first();
     console.log(result);
     res.json({
       status: 1,
       message: 'success',
+      totalAll: countAll.total,
       data: result,
     });
   } catch (err) {

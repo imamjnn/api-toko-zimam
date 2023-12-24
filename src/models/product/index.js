@@ -3,7 +3,14 @@ import db from '../../config/db';
 import {getUserInfo} from '../../utils/formatter';
 
 export const getProduct = async (req, res) => {
-  const {search = '', page = 1, limit = 20, orderBy = 'created'} = req.query;
+  const {
+    search = '',
+    page = 1,
+    limit = 20,
+    orderBy = 'created',
+    category = '',
+    unit = '',
+  } = req.query;
   const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const result = await db('product')
@@ -25,6 +32,8 @@ export const getProduct = async (req, res) => {
           .orWhereILike('product.name', `%${search}%`)
           .orWhereILike('product.product_code', `%${search}%`),
       )
+      .where(a => (category ? a.where('product.category_id', category) : ''))
+      .where(a => (unit ? a.where('product.product_unit_id', unit) : ''))
       .orderBy(orderBy, 'desc')
       .offset(offset)
       .limit(limit);
