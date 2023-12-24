@@ -37,6 +37,7 @@ export const getProduct = async (req, res) => {
       )
       .count('* as total')
       .first();
+    const countAll = await db('product').where('product.status', 1).count('* as total').first();
     const data = result.map(a => {
       const pp = JSON.parse(a.prices);
       return {
@@ -52,6 +53,7 @@ export const getProduct = async (req, res) => {
       status: 1,
       message: 'success',
       total: count.total,
+      totalAll: countAll.total,
       page: Number(page),
       totalPage: Math.ceil(Number(count.total) / Number(limit)),
       limit: Number(limit),
