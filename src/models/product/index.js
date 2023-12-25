@@ -8,6 +8,7 @@ export const getProduct = async (req, res) => {
     page = 1,
     limit = 20,
     orderBy = 'created',
+    orderType = 'desc',
     category = '',
     unit = '',
   } = req.query;
@@ -34,7 +35,7 @@ export const getProduct = async (req, res) => {
       )
       .where(a => (category ? a.where('product.category_id', category) : ''))
       .where(a => (unit ? a.where('product.product_unit_id', unit) : ''))
-      .orderBy(orderBy, 'desc')
+      .orderBy(orderBy, orderType)
       .offset(offset)
       .limit(limit);
     const count = await db('product')
