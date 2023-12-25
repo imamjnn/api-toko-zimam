@@ -210,8 +210,13 @@ export const createProduct = async (req, res) => {
         message: 'success',
         data: {product_id: productId, product_code: newCode},
       });
+      console.log('success createProduct', productResult);
+    } else {
+      res.json({
+        status: 0,
+        message: 'failed createProduct',
+      });
     }
-    console.log('success createProduct', productResult);
   } catch (err) {
     console.log('failed createProduct', err);
     res.json({status: 0, message: 'error'});

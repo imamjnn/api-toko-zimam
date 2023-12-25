@@ -30,18 +30,17 @@ export const createPurchaseTransaction = async (req, res) => {
       transaction_code: `TR-${moment().format('x')}`,
       created: moment().toDate(),
     });
-    console.log(result);
     if (result.length !== 0) {
-      const data = await db('purchase_transaction').where('id', result[0]);
-      console.log(data);
+      const data = await db('purchase_transaction').where('id', result[0]).first();
+      console.log('success transaction', data.transaction_code);
       res.json({
         status: 1,
         message: 'success',
-        data: data[0],
+        data: data,
       });
     }
   } catch (err) {
-    console.log(err);
+    console.log('failed transaction', err);
     res.json({status: 0, message: 'error'});
   }
 };
