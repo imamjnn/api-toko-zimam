@@ -46,7 +46,13 @@ export const createPurchaseTransaction = async (req, res) => {
 };
 
 export const getPurchaseTransaction = async (req, res) => {
-  const {search = '', page = 1, limit = 20} = req.query;
+  const {
+    search = '',
+    page = 1,
+    limit = 20,
+    startDate = moment().subtract(30, 'days').toDate(),
+    endDate = moment().toDate(),
+  } = req.query;
   const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const result = await db('purchase_transaction as pu')
@@ -64,6 +70,8 @@ export const getPurchaseTransaction = async (req, res) => {
       .leftJoin('member as me', 'pu.member_id', 'me.id')
       .leftJoin('product_transaction as po', 'pu.transaction_code', 'po.transaction_code')
       .whereILike('pu.transaction_code', `%${search}%`)
+      .where('pu.created', '>=', startDate)
+      .where('pu.created', '<', endDate)
       .orderBy('pu.created', 'desc')
       .groupBy('pu.id')
       .offset(offset)

@@ -45,6 +45,8 @@ export const getProduct = async (req, res) => {
           .orWhereILike('product.name', `%${search}%`)
           .orWhereILike('product.product_code', `%${search}%`),
       )
+      .where(a => (category ? a.where('product.category_id', category) : ''))
+      .where(a => (unit ? a.where('product.product_unit_id', unit) : ''))
       .count('* as total')
       .first();
     const countAll = await db('product').where('product.status', 1).count('* as total').first();
