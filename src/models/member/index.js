@@ -53,3 +53,30 @@ export const createMember = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const updateMember = async (req, res) => {
+  const {id} = req.query;
+  const {name, address, phone, gender} = req.body;
+  try {
+    const result = await db('member')
+      .update({
+        name,
+        address,
+        phone,
+        gender,
+        updated: moment().toDate(),
+      })
+      .where('id', id);
+    if (result) {
+      res.json({
+        status: 1,
+        message: 'success',
+      });
+    } else {
+      res.json({status: 0, message: 'error'});
+    }
+  } catch (err) {
+    console.log('updateMember', err);
+    res.json({status: 0, message: 'error'});
+  }
+};

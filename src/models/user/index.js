@@ -102,14 +102,17 @@ export const updateUser = async (req, res) => {
           status,
         })
         .where('id', id);
-      res.json({
-        status: 1,
-        message: 'success',
-        data: result,
-      });
+      if (result) {
+        res.json({
+          status: 1,
+          message: 'success',
+        });
+      } else {
+        res.json({status: 0, message: 'error'});
+      }
     }
   } catch (err) {
-    console.log(err);
+    console.log('updateUser', err);
     res.json({status: 0, message: 'error'});
   }
 };
