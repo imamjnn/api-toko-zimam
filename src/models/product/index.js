@@ -214,11 +214,11 @@ export const createProduct = async (req, res) => {
     } else {
       res.json({
         status: 0,
-        message: 'failed createProduct',
+        message: 'error createProduct',
       });
     }
   } catch (err) {
-    console.log('failed createProduct', err);
+    console.log('error createProduct', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -272,7 +272,7 @@ export const updateProduct = async (req, res) => {
     console.log('success updateProduct', productResult, priceResult);
     res.json({status: 1, message: 'success'});
   } catch (err) {
-    console.log('failed updateProduct', err);
+    console.log('error updateProduct', err);
     res.json({status: 0, message: 'error'});
   }
 };

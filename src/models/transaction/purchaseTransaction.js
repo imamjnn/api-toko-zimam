@@ -32,7 +32,7 @@ export const createPurchaseTransaction = async (req, res) => {
     });
     if (result.length !== 0) {
       const data = await db('purchase_transaction').where('id', result[0]).first();
-      console.log('success transaction', data.transaction_code);
+      console.log('success createPurchaseTransaction', data.transaction_code);
       res.json({
         status: 1,
         message: 'success',
@@ -40,7 +40,7 @@ export const createPurchaseTransaction = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log('failed transaction', err);
+    console.log('error createPurchaseTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -69,7 +69,7 @@ export const getPurchaseTransaction = async (req, res) => {
       .offset(offset)
       .limit(limit);
     const countAll = await db('purchase_transaction').count('* as total').first();
-    console.log(result);
+    console.log('getPurchaseTransaction', countAll);
     res.json({
       status: 1,
       message: 'success',
@@ -77,7 +77,7 @@ export const getPurchaseTransaction = async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.log(err);
+    console.log('error getPurchaseTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };

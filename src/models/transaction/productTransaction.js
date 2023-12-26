@@ -16,7 +16,7 @@ export const createProductTransaction = async (req, res) => {
       console.log(te);
     });
     console.log(result);
-    console.log('success product transaction', result);
+    console.log('success createProductTransaction', result);
     if (result.length !== 0) {
       res.json({
         status: 1,
@@ -24,7 +24,7 @@ export const createProductTransaction = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log('failed product transaction', err);
+    console.log('failed createProductTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };

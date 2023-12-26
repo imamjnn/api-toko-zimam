@@ -19,9 +19,10 @@ export const createRestock = async (req, res) => {
         stock: db.raw(`stock ${type === 'increment' ? '+' : '-'} ${stock}`),
       })
       .where('id', product_id);
+    console.log('success createRestock');
     res.json({status: 1, message: 'success', id: result[0]});
   } catch (err) {
-    console.log(err);
+    console.log('error createRestock', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -37,14 +38,14 @@ export const deleteRestock = async (req, res) => {
       })
       .where('id', restock.product_id);
     const del = await db('restock').where('id', id).del();
-    console.log(restock, updateProduct, del);
+    console.log('deleteRestock', restock, updateProduct, del);
     if (del) {
       res.json({status: 1, message: 'success'});
     } else {
       res.json({status: 0, message: 'Terjadi kesalahan'});
     }
   } catch (err) {
-    console.log(err);
+    console.log('error deleteRestock', err);
     res.json({status: 0, message: 'error'});
   }
 };

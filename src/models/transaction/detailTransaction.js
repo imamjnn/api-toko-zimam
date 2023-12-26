@@ -37,6 +37,7 @@ export const getDetailTransaction = async (req, res) => {
         )
         .leftJoin('product', 'po.product_code', 'product.product_code')
         .where('po.transaction_code', code);
+      console.log('getDetailTransaction', result.total_profit);
       res.json({
         status: 1,
         message: 'success',
@@ -46,7 +47,7 @@ export const getDetailTransaction = async (req, res) => {
       res.json({status: 0, message: 'Tidak ada data'});
     }
   } catch (err) {
-    console.log(err);
+    console.log('error getDetailTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -69,14 +70,14 @@ export const deleteTransaction = async (req, res) => {
     });
     // del product_transaction
     const delPo = await db('product_transaction as po').where('po.transaction_code', code).del();
-    console.log('delete', delPo, delPu);
+    console.log('deleteTransaction', delPo, delPu);
     if (delPu && delPo) {
       res.json({status: 1, message: 'Berhasil menghapus transaksi'});
     } else {
       res.json({status: 0, message: 'Terjadi kesalahan pada server'});
     }
   } catch (err) {
-    console.log(err);
+    console.log('error deleteTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };

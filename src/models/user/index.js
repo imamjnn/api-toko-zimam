@@ -78,3 +78,38 @@ export const createUser = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const updateUser = async (req, res) => {
+  const {id} = req.query;
+  const {fullname, username, address, phone, gender, avatar, role, status} = req.body;
+  try {
+    const checkUsername = await db('user')
+      .where('username', username)
+      .andWhere('id', '<>', id)
+      .first();
+    if (checkUsername && checkUsername.fullname) {
+      res.json({status: 0, message: 'Username sudah ada'});
+    } else {
+      const result = await db('user')
+        .update({
+          fullname,
+          username,
+          address,
+          phone,
+          gender,
+          avatar,
+          role,
+          status,
+        })
+        .where('id', id);
+      res.json({
+        status: 1,
+        message: 'success',
+        data: result,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'error'});
+  }
+};
