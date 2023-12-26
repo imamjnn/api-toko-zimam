@@ -52,8 +52,12 @@ export const getProduct = async (req, res) => {
     const countAll = await db('product').where('product.status', 1).count('* as total').first();
     const data = result.map(a => {
       const pp = JSON.parse(a.prices);
+      const isPromoExp = a.time_promotion
+        ? moment(a.time_promotion).format('x') < moment().format('x')
+        : false;
       return {
         ...a,
+        isPromoExp,
         prices: [
           {type: 'normal_price', price: pp.normal_price, discount: pp.normal_price_discount},
           {type: 'retail_price', price: pp.retail_price, discount: pp.retail_price_discount},
@@ -96,12 +100,16 @@ export const getDetailProduct = async (req, res) => {
       .where('product.id', id)
       .first();
 
+    const isPromoExp = result.time_promotion
+      ? moment(result.time_promotion).format('x') < moment().format('x')
+      : false;
     const pp = JSON.parse(result.prices);
     res.json({
       status: 1,
       message: 'success',
       data: {
         ...result,
+        isPromoExp,
         prices: [
           {
             type: 'normal_price',
