@@ -64,3 +64,27 @@ export const getProductTransaction = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const returnProductTransaction = async (req, res) => {
+  const {productCode, transCode} = req.query;
+  const {qty, type_price} = req.body;
+  try {
+    const poTrans = await db('product_transaction')
+      .where('product_code', productCode)
+      .where('transaction_code', transCode)
+      .first();
+    const editPoTrans = await db('product_transaction')
+      .where('product_code', productCode)
+      .where('transaction_code', transCode)
+      .update({qty, type_price});
+    console.log(poTrans);
+    res.json({
+      status: 1,
+      message: 'success',
+      data: poTrans,
+    });
+  } catch (err) {
+    console.log('error returnProductTransaction', err);
+    res.json({status: 0, message: 'error'});
+  }
+};

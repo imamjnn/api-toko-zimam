@@ -13,6 +13,7 @@ import {getProductUnit} from './models/productUnit';
 import {
   createProductTransaction,
   getProductTransaction,
+  returnProductTransaction,
 } from './models/transaction/productTransaction';
 import {
   createPurchaseTransaction,
@@ -55,6 +56,7 @@ router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
 router.get('/product-transactions', authenticateJWT, getProductTransaction);
 router.get('/transaction', authenticateJWT, getDetailTransaction);
 router.delete('/transaction/delete', authenticateJWT, deleteTransaction);
+router.post('/transaction/return', authenticateJWT, returnProductTransaction);
 
 router.get('/users', authenticateJWT, getUser);
 router.post('/user/add', authenticateJWT, createUser);

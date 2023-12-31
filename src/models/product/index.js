@@ -11,6 +11,8 @@ export const getProduct = async (req, res) => {
     orderType = 'desc',
     category = '',
     unit = '',
+    startDate = moment().subtract(30, 'days').toDate(),
+    endDate = moment().toDate(),
   } = req.query;
   const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
@@ -28,6 +30,8 @@ export const getProduct = async (req, res) => {
       .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
       .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
       .where('product.status', 1)
+      .where('product.created', '>=', startDate)
+      .where('product.created', '<', endDate)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
@@ -40,6 +44,8 @@ export const getProduct = async (req, res) => {
       .limit(limit);
     const count = await db('product')
       .where('product.status', 1)
+      .where('product.created', '>=', startDate)
+      .where('product.created', '<', endDate)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
@@ -65,6 +71,7 @@ export const getProduct = async (req, res) => {
         ],
       };
     });
+    console.log('getProduct');
     res.json({
       status: 1,
       message: 'success',
