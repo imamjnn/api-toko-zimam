@@ -3,6 +3,7 @@ import {authLogin, authenticateJWT, checkUsername, generatePassword} from './mod
 import {createCategory, deleteCategory, getCategory, updateCategory} from './models/category';
 import {
   createProduct,
+  deleteProduct,
   getDetailProduct,
   getProduct,
   updateProduct,
@@ -47,6 +48,7 @@ router.get('/products', authenticateJWT, getProduct);
 router.get('/product/detail', authenticateJWT, getDetailProduct);
 router.post('/product/add', authenticateJWT, createProduct);
 router.put('/product/edit', authenticateJWT, updateProduct);
+router.post('/product/delete', authenticateJWT, deleteProduct);
 router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhoto);
 
 router.post('/product-transaction/add', authenticateJWT, createProductTransaction);

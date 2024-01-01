@@ -293,3 +293,15 @@ export const updateProduct = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const deleteProduct = async (req, res) => {
+  const {id} = req.query;
+  try {
+    const result = await db('product').update({status: 2}).where('id', id);
+    console.log('success deleteProduct', result);
+    res.json({status: 1, message: 'success'});
+  } catch (err) {
+    console.log('error deleteProduct', err);
+    res.json({status: 0, message: 'error'});
+  }
+};
