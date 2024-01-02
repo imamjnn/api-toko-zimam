@@ -1,24 +1,15 @@
 import moment from 'moment';
 import db from '../../config/db';
-import jwt from 'jsonwebtoken';
+import {getUserInfo} from '../../utils/formatter';
 
 export const createPurchaseTransaction = async (req, res) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader.split(' ')[1];
-  const user = authHeader
-    ? jwt.verify(token, process.env.SECRET_KEY, (err, result) => {
-        if (!err) {
-          return result;
-        }
-      })
-    : null;
-  const {total_price, total_qty, nominal_cash, total_discount, ppn, status, member_id, user_id} =
-    req.body;
+  const user = getUserInfo(req.headers.authorization);
+  const {total_price, total_qty, nominal_cash, total_discount, ppn, status, member_id} = req.body;
   const data = {
-    total_price,
-    total_qty,
+    total_price: 0,
+    total_qty: 0,
     nominal_cash,
-    total_discount,
+    total_discount: 0,
     ppn,
     status,
     member_id,

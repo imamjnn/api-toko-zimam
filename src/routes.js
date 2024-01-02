@@ -13,6 +13,7 @@ import upload from './utils/upload';
 import {getProductUnit} from './models/productUnit';
 import {
   createProductTransaction,
+  deleteProductTransaction,
   getProductTransaction,
   returnProductTransaction,
 } from './models/transaction/productTransaction';
@@ -56,6 +57,7 @@ router.post('/product-transaction/add', authenticateJWT, createProductTransactio
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
 router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
 router.get('/product-transactions', authenticateJWT, getProductTransaction);
+router.delete('/product-transaction/delete', authenticateJWT, deleteProductTransaction);
 router.get('/transaction', authenticateJWT, getDetailTransaction);
 router.delete('/transaction/delete', authenticateJWT, deleteTransaction);
 router.post('/transaction/return', authenticateJWT, returnProductTransaction);
