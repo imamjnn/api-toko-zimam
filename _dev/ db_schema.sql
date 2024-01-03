@@ -102,7 +102,8 @@ CREATE TABLE `purchase_transaction` (
   `total_discount` INT,
   `ppn` INT,
   `status` VARCHAR(100),
-  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created` DATETIME,
+  `updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `member_id` INT,
   `user_id` INT
 );
@@ -152,5 +153,16 @@ CREATE TABLE `user_perms` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
   `hash` text,
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- db_toko_zimam.debt_history definition
+DROP TABLE IF EXISTS `debt_history`;
+CREATE TABLE `debt_history` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `transaction_code` VARCHAR(100) NOT NULL,
+  `amount` INT,
+  `isDP` BOOLEAN,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP
 );

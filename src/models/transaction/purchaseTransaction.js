@@ -4,23 +4,32 @@ import {getUserInfo} from '../../utils/formatter';
 
 export const createPurchaseTransaction = async (req, res) => {
   const user = getUserInfo(req.headers.authorization);
-  const {total_price, total_qty, nominal_cash, total_discount, ppn, status, member_id} = req.body;
+  const {nominal_cash, status, member_id} = req.body;
   const data = {
     total_price: 0,
     total_qty: 0,
     nominal_cash,
     total_discount: 0,
-    ppn,
+    ppn: 0,
     status,
     member_id,
     user_id: user.id,
   };
   try {
+    const codeTrans = `TR-${moment().format('x')}`;
     const result = await db('purchase_transaction').insert({
       ...data,
-      transaction_code: `TR-${moment().format('x')}`,
+      transaction_code: codeTrans,
       created: moment().toDate(),
     });
+    if (status === 'debt') {
+      await db('debt_history').insert({
+        user_id: user.id,
+        transaction_code: codeTrans,
+        amount: nominal_cash,
+        isDP: true,
+      });
+    }
     if (result.length !== 0) {
       const data = await db('purchase_transaction').where('id', result[0]).first();
       console.log('success createPurchaseTransaction', data.transaction_code);
@@ -32,6 +41,29 @@ export const createPurchaseTransaction = async (req, res) => {
     }
   } catch (err) {
     console.log('error createPurchaseTransaction', err);
+    res.json({status: 0, message: 'error'});
+  }
+};
+
+export const updatePurchaseTransaction = async (req, res) => {
+  const user = getUserInfo(req.headers.authorization);
+  const {code} = req.query;
+  const {nominal_cash, status, member_id} = req.body;
+  const data = {
+    nominal_cash,
+    status,
+    member_id,
+    user_id: user.id,
+  };
+  try {
+    const result = await db('purchase_transaction').update(data).where('transaction_code', code);
+    console.log('success updatePurchaseTransaction', result);
+    res.json({
+      status: 1,
+      message: 'success',
+    });
+  } catch (err) {
+    console.log('error updatePurchaseTransaction', err);
     res.json({status: 0, message: 'error'});
   }
 };
@@ -77,6 +109,40 @@ export const getPurchaseTransaction = async (req, res) => {
     });
   } catch (err) {
     console.log('error getPurchaseTransaction', err);
+    res.json({status: 0, message: 'error'});
+  }
+};
+
+export const createDebtHistory = async (req, res) => {
+  const user = getUserInfo(req.headers.authorization);
+  const {transaction_code, amount} = req.body;
+  const data = {
+    user_id: user.id,
+    transaction_code,
+    amount,
+    isDP: false,
+  };
+  try {
+    const result = await db('debt_history').insert(data);
+    const checkPu = await db('purchase_transaction')
+      .where('transaction_code', transaction_code)
+      .first();
+    await db('purchase_transaction')
+      .update({
+        nominal_cash: db.raw(`?? + ${amount}`, ['nominal_cash']),
+        status:
+          checkPu.total_price - checkPu.total_discount <= checkPu.nominal_cash + amount
+            ? 'cash'
+            : 'debt',
+      })
+      .where('transaction_code', transaction_code);
+    console.log('success createDebtHistory', result);
+    res.json({
+      status: 1,
+      message: 'success',
+    });
+  } catch (err) {
+    console.log('error createDebtHistory', err);
     res.json({status: 0, message: 'error'});
   }
 };

@@ -37,11 +37,27 @@ export const getDetailTransaction = async (req, res) => {
         )
         .leftJoin('product', 'po.product_code', 'product.product_code')
         .where('po.transaction_code', code);
+
+      // save debt when not exists
+      const checkDebt = await db('debt_history')
+        .select('*')
+        .where('transaction_code', code)
+        .first();
+      if (result.status === 'debt' && !checkDebt) {
+        await db('debt_history').insert({
+          user_id: 1,
+          transaction_code: code,
+          amount: result.nominal_cash,
+          isDP: true,
+        });
+      }
+
+      const debts = await db('debt_history').select('*').where('transaction_code', code);
       console.log('getDetailTransaction', result.total_profit);
       res.json({
         status: 1,
         message: 'success',
-        data: {...result, products},
+        data: {...result, products, debts},
       });
     } else {
       res.json({status: 0, message: 'Tidak ada data'});
@@ -70,7 +86,8 @@ export const deleteTransaction = async (req, res) => {
     });
     // del product_transaction
     const delPo = await db('product_transaction as po').where('po.transaction_code', code).del();
-    console.log('deleteTransaction', delPo, delPu);
+    const delDe = await db('debt_history as de').where('de.transaction_code', code).del();
+    console.log('deleteTransaction', delPo, delPu, delDe);
     if (delPu && delPo) {
       res.json({status: 1, message: 'Berhasil menghapus transaksi'});
     } else {

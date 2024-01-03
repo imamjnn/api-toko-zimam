@@ -18,8 +18,10 @@ import {
   returnProductTransaction,
 } from './models/transaction/productTransaction';
 import {
+  createDebtHistory,
   createPurchaseTransaction,
   getPurchaseTransaction,
+  updatePurchaseTransaction,
 } from './models/transaction/purchaseTransaction';
 import {createUser, getUser, updateUser} from './models/user';
 import {createMember, getMember, updateMember} from './models/member';
@@ -57,6 +59,8 @@ router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhot
 router.post('/product-transaction/add', authenticateJWT, createProductTransaction);
 
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
+router.put('/purchase-transaction/edit', authenticateJWT, updatePurchaseTransaction);
+router.post('/debt-history/add', authenticateJWT, createDebtHistory);
 router.get('/purchase-transactions', authenticateJWT, getPurchaseTransaction);
 router.get('/product-transactions', authenticateJWT, getProductTransaction);
 router.delete('/product-transaction/delete', authenticateJWT, deleteProductTransaction);
