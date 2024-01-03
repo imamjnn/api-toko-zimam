@@ -73,6 +73,7 @@ export const getPurchaseTransaction = async (req, res) => {
     search = '',
     page = 1,
     limit = 20,
+    status = '',
     startDate = moment().subtract(30, 'days').toDate(),
     endDate = moment().toDate(),
   } = req.query;
@@ -93,6 +94,7 @@ export const getPurchaseTransaction = async (req, res) => {
       .leftJoin('member as me', 'pu.member_id', 'me.id')
       .leftJoin('product_transaction as po', 'pu.transaction_code', 'po.transaction_code')
       .whereILike('pu.transaction_code', `%${search}%`)
+      .where(a => (status ? a.where('pu.status', status) : ''))
       .where('pu.created', '>=', startDate)
       .where('pu.created', '<', endDate)
       .orderBy('pu.created', 'desc')
