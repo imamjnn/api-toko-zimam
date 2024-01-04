@@ -7,9 +7,10 @@ export const getReportProductTransaction = async (req, res) => {
   try {
     const rProduct = await db('product_transaction')
       .sum('total_price as total_sold')
+      .sum('discount as total_discount')
       .sum('purchase_price as total_purchase')
       .sum('stock_reduced as total_stock_reduced')
-      .select(db.raw('sum(total_price) - sum(purchase_price) as total_profit'))
+      .select(db.raw('sum(total_price) - sum(purchase_price) - sum(discount) as total_profit'))
       .where('created', '>=', startDate)
       .where('created', '<', endDate)
       .first();

@@ -31,6 +31,7 @@ export const getDetailTransaction = async (req, res) => {
           'po.qty',
           'po.type_price',
           'po.sell_price',
+          'po.manual_price',
           'po.discount',
           'po.total_price',
           'po.stock_reduced',
