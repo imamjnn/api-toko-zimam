@@ -30,11 +30,12 @@ import {createRestock, deleteRestock} from './models/product/productRestock';
 import {createUserPerms} from './models/user/userPerms';
 import {getReportProductTransaction} from './models/report/reportTrans';
 import {getReportStockProduct} from './models/report/reportProduct';
+import pkg from '../package.json';
 
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.json({message: 'api toko zimam'});
+  res.json({message: 'api toko zimam', version: pkg.version});
 });
 
 router.post('/generate-pass', generatePassword);
