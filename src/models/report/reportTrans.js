@@ -14,9 +14,9 @@ export const getReportProductTransaction = async (req, res) => {
       .where('created', '>=', startDate)
       .where('created', '<', endDate)
       .first();
-    const rProductList = await db('product_transaction')
-      .where('created', '>=', startDate)
-      .where('created', '<', endDate);
+    // const rProductList = await db('product_transaction')
+    //   .where('created', '>=', startDate)
+    //   .where('created', '<', endDate);
     const rPurchase = await db('purchase_transaction as pu')
       .select('pu.*', 'us.fullname as cashier_name', 'me.name as member_name')
       .leftJoin('user as us', 'pu.user_id', 'us.id')
@@ -37,7 +37,7 @@ export const getReportProductTransaction = async (req, res) => {
       ...rProduct,
       total_transaction: rPurchase.length,
       debt: rPurchaseDebt,
-      products: rProductList,
+      // products: rProductList,
       transactions: rPurchase,
     };
     res.json({
