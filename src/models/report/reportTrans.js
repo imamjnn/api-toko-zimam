@@ -14,7 +14,16 @@ export const getReportProductTransaction = async (req, res) => {
       .where('created', '>=', startDate)
       .where('created', '<', endDate)
       .first();
-    const rPurchase = await db('purchase_transaction')
+    const rProductList = await db('product_transaction')
+      .where('created', '>=', startDate)
+      .where('created', '<', endDate);
+    const rPurchase = await db('purchase_transaction as pu')
+      .select('pu.*', 'us.fullname as cashier_name', 'me.name as member_name')
+      .leftJoin('user as us', 'pu.user_id', 'us.id')
+      .leftJoin('member as me', 'pu.member_id', 'me.id')
+      .where('pu.created', '>=', startDate)
+      .where('pu.created', '<', endDate);
+    const rPurchaseDebt = await db('purchase_transaction')
       // .select('transaction_code', 'status', 'total_price')
       .sum('total_price as total_price')
       .sum('nominal_cash as total_nominal_cash')
@@ -24,7 +33,13 @@ export const getReportProductTransaction = async (req, res) => {
       .where('created', '<', endDate)
       .first();
     console.log('success getReportProductTransaction', rProduct);
-    const data = {...rProduct, debt: rPurchase};
+    const data = {
+      ...rProduct,
+      total_transaction: rPurchase.length,
+      debt: rPurchaseDebt,
+      products: rProductList,
+      transactions: rPurchase,
+    };
     res.json({
       status: 1,
       message: 'success',
