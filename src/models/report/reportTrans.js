@@ -12,11 +12,15 @@ export const getReportProductTransaction = async (req, res) => {
   const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const rProduct = await db('product_transaction')
-      .sum('total_price as total_sold')
-      .sum('discount as total_discount')
       .sum('purchase_price as total_purchase')
-      .sum('stock_reduced as total_stock_reduced')
-      .select(db.raw('sum(total_price) - sum(purchase_price) - sum(discount) as total_profit'))
+      .select(
+        db.raw(
+          'coalesce(sum(total_price) - sum(purchase_price) - sum(discount), 0) as total_profit',
+        ),
+        db.raw('coalesce(sum(stock_reduced), 0) as total_stock_reduced'),
+        db.raw('coalesce(sum(total_price), 0) as total_sold'),
+        db.raw('coalesce(sum(discount), 0) as total_discount'),
+      )
       .where('created', '>=', startDate)
       .where('created', '<', endDate)
       .first();
@@ -32,6 +36,11 @@ export const getReportProductTransaction = async (req, res) => {
       .where('pu.created', '<', endDate)
       .offset(offset)
       .limit(limit);
+    const countPurchase = await db('purchase_transaction')
+      .count('transaction_code as total_trans')
+      .where('created', '>=', startDate)
+      .where('created', '<', endDate)
+      .first();
     const rPurchaseDebt = await db('purchase_transaction')
       // .select('transaction_code', 'status', 'total_price')
       .sum('total_price as total_price')
@@ -44,7 +53,7 @@ export const getReportProductTransaction = async (req, res) => {
     console.log('success getReportProductTransaction', rProduct);
     const data = {
       ...rProduct,
-      total_transaction: rPurchase.length,
+      total_transaction: countPurchase.total_trans,
       debt: rPurchaseDebt,
       // products: rProductList,
       transactions: rPurchase,
