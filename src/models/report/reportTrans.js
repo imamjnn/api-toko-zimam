@@ -2,8 +2,14 @@ import moment from 'moment';
 import db from '../../config/db';
 
 export const getReportProductTransaction = async (req, res) => {
-  const {startDate = moment().subtract(30, 'days').toDate(), endDate = moment().toDate()} =
-    req.query;
+  const {
+    startDate = moment().subtract(30, 'days').toDate(),
+    endDate = moment().toDate(),
+    search = '',
+    page = 1,
+    limit = 20,
+  } = req.query;
+  const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const rProduct = await db('product_transaction')
       .sum('total_price as total_sold')
@@ -21,8 +27,11 @@ export const getReportProductTransaction = async (req, res) => {
       .select('pu.*', 'us.fullname as cashier_name', 'me.name as member_name')
       .leftJoin('user as us', 'pu.user_id', 'us.id')
       .leftJoin('member as me', 'pu.member_id', 'me.id')
+      .whereILike('pu.transaction_code', `%${search}%`)
       .where('pu.created', '>=', startDate)
-      .where('pu.created', '<', endDate);
+      .where('pu.created', '<', endDate)
+      .offset(offset)
+      .limit(limit);
     const rPurchaseDebt = await db('purchase_transaction')
       // .select('transaction_code', 'status', 'total_price')
       .sum('total_price as total_price')
