@@ -31,6 +31,7 @@ import {createUserPerms} from './models/user/userPerms';
 import {getReportProductTransaction} from './models/report/reportTrans';
 import {getReportStockProduct} from './models/report/reportProduct';
 import pkg from '../package.json';
+import {createStockOpname} from './models/product/stockOpname';
 
 const router = express.Router();
 
@@ -58,6 +59,7 @@ router.post('/product/delete', authenticateJWT, deleteProduct);
 router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhoto);
 
 router.post('/product-transaction/add', authenticateJWT, createProductTransaction);
+router.post('/stock-opname/add', authenticateJWT, createStockOpname);
 
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
 router.put('/purchase-transaction/edit', authenticateJWT, updatePurchaseTransaction);

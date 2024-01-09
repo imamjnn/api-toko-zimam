@@ -50,8 +50,17 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   const {id} = req.query;
   try {
-    const result = await db('category').where('id', id).del();
-    res.json({status: 1, message: 'success', data: result});
+    const checkProduct = await db('product').where('category_id', id).first();
+    if (!checkProduct) {
+      const result = await db('category').where('id', id).del();
+      console.log('success deleteCategory', result);
+      res.json({status: 1, message: 'success', data: checkProduct});
+    } else {
+      res.json({
+        status: 0,
+        message: 'Kategori ini tidak dapat dihapus!, karena ada relasi dengan produk',
+      });
+    }
   } catch (err) {
     console.log(err);
     res.json({status: 0, message: 'err'});
