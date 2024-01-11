@@ -166,3 +166,22 @@ CREATE TABLE `debt_history` (
   `isDP` BOOLEAN,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE `stock_opname` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `date` datetime DEFAULT NULL,
+  `notes` text,
+  `status` varchar(100) NOT NULL,
+  `user_id` int NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `product_stock_opname` (
+  `id` bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `stock_opname_id` int NOT NULL,
+  `product_code` int NOT NULL,
+  `system_stock` int NOT NULL,
+  `physical_stock` int NOT NULL,
+  `notes` text,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

@@ -26,12 +26,16 @@ import {
 import {createUser, getUser, updateUser} from './models/user';
 import {createMember, getMember, updateMember} from './models/member';
 import {deleteTransaction, getDetailTransaction} from './models/transaction/detailTransaction';
-import {createRestock, deleteRestock} from './models/product/productRestock';
+import {createRestock, deleteRestock, getRestock} from './models/product/productRestock';
 import {createUserPerms} from './models/user/userPerms';
 import {getReportProductTransaction} from './models/report/reportTrans';
 import {getReportStockProduct} from './models/report/reportProduct';
 import pkg from '../package.json';
-import {createStockOpname} from './models/product/stockOpname';
+import {
+  createStockOpname,
+  getProductStockOpname,
+  getStockOpname,
+} from './models/product/stockOpname';
 
 const router = express.Router();
 
@@ -59,7 +63,10 @@ router.post('/product/delete', authenticateJWT, deleteProduct);
 router.post('/upload-photo', authenticateJWT, upload.single('photo'), uploadPhoto);
 
 router.post('/product-transaction/add', authenticateJWT, createProductTransaction);
+
 router.post('/stock-opname/add', authenticateJWT, createStockOpname);
+router.get('/stock-opname', authenticateJWT, getStockOpname);
+router.get('/product-stock-opname', authenticateJWT, getProductStockOpname);
 
 router.post('/purchase-transaction/add', authenticateJWT, createPurchaseTransaction);
 router.put('/purchase-transaction/edit', authenticateJWT, updatePurchaseTransaction);
@@ -80,6 +87,7 @@ router.get('/members', authenticateJWT, getMember);
 router.put('/member/edit', authenticateJWT, updateMember);
 router.post('/member/add', authenticateJWT, createMember);
 
+router.get('/restock', authenticateJWT, getRestock);
 router.post('/restock/add', authenticateJWT, createRestock);
 router.delete('/restock/delete', authenticateJWT, deleteRestock);
 

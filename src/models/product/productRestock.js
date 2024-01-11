@@ -49,3 +49,20 @@ export const deleteRestock = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const getRestock = async (req, res) => {
+  const {productId, limit = 10} = req.query;
+  try {
+    const result = await db('restock')
+      .select('restock.*', 'user.fullname as user_name')
+      .leftJoin('user', 'restock.user_id', 'user.id')
+      .where('product_id', productId)
+      .limit(limit)
+      .orderBy('created', 'desc');
+    console.log('success getRestock');
+    res.json({status: 1, message: 'success', data: result});
+  } catch (err) {
+    console.log('error getRestock', err);
+    res.json({status: 0, message: 'error'});
+  }
+};
