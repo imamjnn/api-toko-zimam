@@ -1,5 +1,6 @@
+import moment from 'moment';
 import db from '../../config/db';
-import {getUserInfo} from '../../utils/formatter';
+import {checkUnit, getUserInfo} from '../../utils/formatter';
 
 export const createStockOpname = async (req, res) => {
   const {date, notes, status, products} = req.body;
@@ -13,6 +14,7 @@ export const createStockOpname = async (req, res) => {
     });
     const checkProduct = await Promise.all(
       products.map(async a => {
+        const ck = await db('product').where('product_code', a.product_code).first();
         if (status === 'success') {
           const updateStock = await db('product')
             .update({stock: a.physical_stock})
@@ -25,7 +27,6 @@ export const createStockOpname = async (req, res) => {
           });
           console.log('updateStock', updateStock, addRestock);
         }
-        const ck = await db('product').where('product_code', a.product_code).first();
         return {
           notes: a.notes,
           product_code: a.product_code,
@@ -61,16 +62,76 @@ export const getStockOpname = async (req, res) => {
 };
 
 export const getProductStockOpname = async (req, res) => {
-  const {id, limit = 20} = req.query;
+  const {
+    id,
+    limit = 20,
+    search = '',
+    startDate = moment().subtract(30, 'days').toDate(),
+    endDate = moment().toDate(),
+  } = req.query;
   try {
     const result = await db('product_stock_opname as pso')
-      .select('pso.*', 'product.name as product_name')
+      .select(
+        'pso.*',
+        'product.name as product_name',
+        'product.product_code as product_code',
+        'pu.name as unit_name',
+        'pp.purchase_price',
+        db.raw(
+          `(pp.purchase_price / case when pu.name = 'Lusin' then 12 when pu.name = 'Kodi' then 20 else 1 end) * (pso.physical_stock - pso.system_stock) as nominal_loss`,
+        ),
+      )
       .leftJoin('product', 'pso.product_code', 'product.product_code')
-      .where('stock_opname_id', id)
+      .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
+      .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
+      .where(query => {
+        id ? query.where('stock_opname_id', id) : null;
+      })
+      .where('pso.created', '>=', startDate)
+      .where('pso.created', '<', endDate)
+      .where(a =>
+        a
+          .orWhereILike('product.name', `%${search}%`)
+          .orWhereILike('product.product_code', `%${search}%`),
+      )
       .limit(limit)
-      .orderBy('created', 'desc');
-    console.log('success getStockOpname');
-    res.json({status: 1, message: 'success', data: result});
+      .orderBy('pso.created', 'desc');
+    // .groupBy('pso.id');
+    const count = await db('product_stock_opname')
+      .where('created', '>=', startDate)
+      .where('created', '<', endDate)
+      .count('id as total')
+      .first();
+    const totalLoss = await db('product_stock_opname as pso')
+      .select(
+        db.raw(
+          `sum((pp.purchase_price / case when pu.name = 'Lusin' then 12 when pu.name = 'Kodi' then 20 else 1 end) * (pso.physical_stock - pso.system_stock)) as total_loss`,
+        ),
+      )
+      .leftJoin('product', 'pso.product_code', 'product.product_code')
+      .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
+      .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
+      .where('pso.created', '>=', startDate)
+      .where('pso.created', '<', endDate)
+      .first();
+    console.log('success getStockOpname', result);
+    const data = result.map(a => {
+      const diff = a.physical_stock - a.system_stock;
+      const isLoss = diff < 0;
+      return {
+        ...a,
+        diff,
+        isLoss,
+        nominal_loss: a.nominal_loss.toFixed(),
+      };
+    });
+    res.json({
+      status: 1,
+      message: 'success',
+      total: count.total,
+      total_loss: totalLoss.total_loss.toFixed(),
+      data,
+    });
   } catch (err) {
     console.log('error getStockOpname', err);
     res.json({status: 0, message: 'error'});
