@@ -19,3 +19,11 @@ INSERT INTO perms (`id`, `role_name`, `group`, `name`, `label`) VALUES
 
 TRUNCATE `user_perms`;
 INSERT INTO user_perms (`id`, `user_id`, `hash`) VALUES(1, 1, '["all-access"]');
+
+INSERT INTO db_toko_zimam.`user` (fullname,username,nik,password,address,phone,gender,avatar,`role`,status,created) VALUES
+	 ('Zahra Nur Sasqiyah','zahranur','240013','$2b$10$N9FFH.cPQRXXUHQPYDYVl.clrKMz21TdVSHnrTrb3lt9hvmhRw0IS','Cintamanik Krajan','083154741177','female',NULL,'cashier','active','2024-01-13 09:37:58'),
+	 ('Selfi Larassati','selfi','240014','$2b$10$hH07ltbmsPLRF6/F0C.s5e4GPSKgogeR4ytL945EBlJRMHuSk406e','Bawangan','085326681253','female',NULL,'cashier','active','2024-01-13 09:39:10'),
+	 ('Mohamad Wisnu','wisnu','240015','$2b$10$nzKGlgKXSNNCsd.ttmyW/.f56Q9diR3Ti725MiqEDhB0WiORTnUze','Bumijawa','082137782796','male',NULL,'warehouse','active','2024-01-13 09:40:05'),
+	 ('Siti Nimatul Latifah','siti','240016','$2b$10$Fx/b5jDnwpOymWgjfmA4euuvw5P.kpQjhmYS9zDTu/zogaOdmbJM2','Karang Jambu ','081334880664','female',NULL,'cashier','active','2024-01-13 09:41:26'),
+	 ('Septi Ariani','septi','240017','$2b$10$ZVz8zMv6LCdSE3xt8lXXeepIaqBW7MItvnTRY1rcgh/ti65tE3GpG','Bandarsari','085801020405','female',NULL,'cashier','active','2024-01-13 09:42:16');
+

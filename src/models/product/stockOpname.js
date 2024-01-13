@@ -28,6 +28,7 @@ export const createStockOpname = async (req, res) => {
           console.log('updateStock', updateStock, addRestock);
         }
         return {
+          date,
           notes: a.notes,
           product_code: a.product_code,
           physical_stock: a.physical_stock,
@@ -87,15 +88,15 @@ export const getProductStockOpname = async (req, res) => {
       .where(query => {
         id ? query.where('stock_opname_id', id) : null;
       })
-      .where('pso.created', '>=', startDate)
-      .where('pso.created', '<', endDate)
+      .where('pso.date', '>=', startDate)
+      .where('pso.date', '<', endDate)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
           .orWhereILike('product.product_code', `%${search}%`),
       )
       .limit(limit)
-      .orderBy('pso.created', 'desc');
+      .orderBy('pso.date', 'desc');
     // .groupBy('pso.id');
     const count = await db('product_stock_opname')
       .where('created', '>=', startDate)
@@ -105,14 +106,14 @@ export const getProductStockOpname = async (req, res) => {
     const totalLoss = await db('product_stock_opname as pso')
       .select(
         db.raw(
-          `sum((pp.purchase_price / case when pu.name = 'Lusin' then 12 when pu.name = 'Kodi' then 20 else 1 end) * (pso.physical_stock - pso.system_stock)) as total_loss`,
+          `sum((pp.purchase_price / case when pu.name = 'Lusin' then 12 when pu.name = 'Kodi' then 20 else 1 end) * (case when pso.physical_stock - pso.system_stock < 0 then pso.physical_stock - pso.system_stock else 0 end)) as total_loss`,
         ),
       )
       .leftJoin('product', 'pso.product_code', 'product.product_code')
       .leftJoin('product_price as pp', 'product.id', 'pp.product_id')
       .leftJoin('product_unit as pu', 'product.product_unit_id', 'pu.id')
-      .where('pso.created', '>=', startDate)
-      .where('pso.created', '<', endDate)
+      .where('pso.date', '>=', startDate)
+      .where('pso.date', '<', endDate)
       .first();
     console.log('success getStockOpname', result);
     const data = result.map(a => {
@@ -122,14 +123,14 @@ export const getProductStockOpname = async (req, res) => {
         ...a,
         diff,
         isLoss,
-        nominal_loss: a.nominal_loss.toFixed(),
+        nominal_loss: a.nominal_loss ? a.nominal_loss.toFixed() : 0,
       };
     });
     res.json({
       status: 1,
       message: 'success',
       total: count.total,
-      total_loss: totalLoss.total_loss.toFixed(),
+      total_loss: totalLoss.total_loss ? totalLoss.total_loss.toFixed() : 0,
       data,
     });
   } catch (err) {
