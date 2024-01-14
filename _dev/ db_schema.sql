@@ -183,5 +183,6 @@ CREATE TABLE `product_stock_opname` (
   `system_stock` int NOT NULL,
   `physical_stock` int NOT NULL,
   `notes` text,
+  `date` datetime DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
