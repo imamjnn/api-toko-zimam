@@ -99,8 +99,8 @@ export const getProductStockOpname = async (req, res) => {
       .orderBy('pso.date', 'desc');
     // .groupBy('pso.id');
     const count = await db('product_stock_opname')
-      .where('created', '>=', startDate)
-      .where('created', '<', endDate)
+      .where('date', '>=', startDate)
+      .where('date', '<', endDate)
       .count('id as total')
       .first();
     const totalLoss = await db('product_stock_opname as pso')
