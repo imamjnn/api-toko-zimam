@@ -29,7 +29,7 @@ import {deleteTransaction, getDetailTransaction} from './models/transaction/deta
 import {createRestock, deleteRestock, getRestock} from './models/product/productRestock';
 import {createUserPerms} from './models/user/userPerms';
 import {getReportProductTransaction} from './models/report/reportTrans';
-import {getReportStockProduct} from './models/report/reportProduct';
+import {getReportProductSale, getReportStockProduct} from './models/report/reportProduct';
 import pkg from '../package.json';
 import {
   createStockOpname,
@@ -93,5 +93,6 @@ router.delete('/restock/delete', authenticateJWT, deleteRestock);
 
 router.get('/report/product-transaction', authenticateJWT, getReportProductTransaction);
 router.get('/report/stock-product', authenticateJWT, getReportStockProduct);
+router.get('/report/product-sale', authenticateJWT, getReportProductSale);
 
 export default router;
