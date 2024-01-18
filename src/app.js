@@ -17,6 +17,6 @@ app.disable('x-powered-by');
 app.use(router);
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`App listening at http://localhost:${port}`);
 });
