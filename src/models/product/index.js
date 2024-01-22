@@ -11,7 +11,7 @@ export const getProduct = async (req, res) => {
     orderType = 'desc',
     category = '',
     unit = '',
-    startDate = moment().subtract(30, 'days').toDate(),
+    startDate = moment('2023-01-12').toDate(),
     endDate = moment().toDate(),
   } = req.query;
   const offset = (page < 1 ? 1 : page - 1) * limit;
