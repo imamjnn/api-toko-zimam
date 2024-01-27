@@ -36,6 +36,7 @@ import {
   getProductStockOpname,
   getStockOpname,
 } from './models/product/stockOpname';
+import {getReportDashboard} from './models/report/resportDashboard';
 
 const router = express.Router();
 
@@ -94,5 +95,6 @@ router.delete('/restock/delete', authenticateJWT, deleteRestock);
 router.get('/report/product-transaction', authenticateJWT, getReportProductTransaction);
 router.get('/report/stock-product', authenticateJWT, getReportStockProduct);
 router.get('/report/product-sale', authenticateJWT, getReportProductSale);
+router.get('/report/dashboard', authenticateJWT, getReportDashboard);
 
 export default router;
