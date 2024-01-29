@@ -9,12 +9,14 @@ export const getUser = async (req, res) => {
       .select(
         'user.id',
         'user.fullname',
+        'user.username',
         'user.nik',
         'user.phone',
         'user.address',
         'user.gender',
         'user.avatar',
         'user.role',
+        'user.status',
         'user.created',
       )
       .whereILike('fullname', `%${search}%`)
@@ -103,6 +105,13 @@ export const updateUser = async (req, res) => {
         })
         .where('id', id);
       if (result) {
+        // update user perms
+        const resultPerms = await db('perms').where('role_name', role);
+        const updatePerms = await db('user_perms')
+          .update({
+            hash: JSON.stringify(resultPerms.map(a => a.name)),
+          })
+          .where('user_id', id);
         res.json({
           status: 1,
           message: 'success',
