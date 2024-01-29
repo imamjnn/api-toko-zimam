@@ -23,7 +23,7 @@ import {
   getPurchaseTransaction,
   updatePurchaseTransaction,
 } from './models/transaction/purchaseTransaction';
-import {createUser, getUser, updateUser} from './models/user';
+import {createUser, getUser, updatePassword, updateUser} from './models/user';
 import {createMember, getMember, updateMember} from './models/member';
 import {deleteTransaction, getDetailTransaction} from './models/transaction/detailTransaction';
 import {createRestock, deleteRestock, getRestock} from './models/product/productRestock';
@@ -82,6 +82,7 @@ router.post('/transaction/return', authenticateJWT, returnProductTransaction);
 router.get('/users', authenticateJWT, getUser);
 router.post('/user/add', authenticateJWT, createUser);
 router.put('/user/edit', authenticateJWT, updateUser);
+router.put('/user/edit-password', authenticateJWT, updatePassword);
 router.post('/user/perms/add', authenticateJWT, createUserPerms);
 
 router.get('/members', authenticateJWT, getMember);

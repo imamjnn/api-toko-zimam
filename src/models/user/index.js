@@ -125,3 +125,24 @@ export const updateUser = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const updatePassword = async (req, res) => {
+  const {id} = req.query;
+  const {password} = req.body;
+  try {
+    const result = await db('user')
+      .update({password: hashPassword(password)})
+      .where('id', id);
+    if (result) {
+      res.json({
+        status: 1,
+        message: 'success',
+      });
+    } else {
+      res.json({status: 0, message: 'error'});
+    }
+  } catch (err) {
+    console.log('updatePassword', err);
+    res.json({status: 0, message: 'error'});
+  }
+};
