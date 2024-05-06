@@ -66,10 +66,12 @@ export const getProductStockOpname = async (req, res) => {
   const {
     id,
     limit = 20,
+    page = 1,
     search = '',
     startDate = moment().subtract(30, 'days').toDate(),
     endDate = moment().toDate(),
   } = req.query;
+  const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
     const result = await db('product_stock_opname as pso')
       .select(
@@ -96,6 +98,7 @@ export const getProductStockOpname = async (req, res) => {
           .orWhereILike('product.product_code', `%${search}%`),
       )
       .limit(limit)
+      .offset(offset)
       .orderBy('pso.date', 'desc');
     // .groupBy('pso.id');
     const count = await db('product_stock_opname')
@@ -131,6 +134,8 @@ export const getProductStockOpname = async (req, res) => {
       message: 'success',
       total: count.total,
       total_loss: totalLoss.total_loss ? totalLoss.total_loss.toFixed() : 0,
+      page: Number(page),
+      totalPage: Math.ceil(Number(count.total) / Number(limit)),
       data,
     });
   } catch (err) {

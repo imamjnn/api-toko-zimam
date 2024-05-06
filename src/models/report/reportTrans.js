@@ -50,6 +50,13 @@ export const getReportProductTransaction = async (req, res) => {
       .where('created', '>=', startDate)
       .where('created', '<', endDate)
       .first();
+    const count = await db('purchase_transaction')
+      .where('created', '>=', startDate)
+      .where('created', '<', endDate)
+      .whereILike('transaction_code', `%${search}%`)
+      .count('* as total')
+      .first();
+    const countAll = await db('purchase_transaction').count('* as total').first();
     console.log('success getReportProductTransaction', rProduct);
     const data = {
       ...rProduct,
@@ -61,6 +68,10 @@ export const getReportProductTransaction = async (req, res) => {
     res.json({
       status: 1,
       message: 'success',
+      page: Number(page),
+      total: count.total,
+      totalAll: countAll.total,
+      totalPage: Math.ceil(Number(count.total) / Number(limit)),
       data,
     });
   } catch (err) {
