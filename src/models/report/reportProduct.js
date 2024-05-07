@@ -63,6 +63,7 @@ export const getReportProductSale = async (req, res) => {
       message: 'success',
       totalAll: countAll.total,
       page: Number(page),
+      totalPage: Math.ceil(Number(countAll.total) / Number(limit)),
       limit: Number(limit),
       data: products,
     });
