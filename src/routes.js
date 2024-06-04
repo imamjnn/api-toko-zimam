@@ -37,6 +37,9 @@ import {
   getStockOpname,
 } from './models/product/stockOpname';
 import {getReportDashboard} from './models/report/resportDashboard';
+import {getReportFinance} from './models/report/reportFinance';
+import {createFinanceType, getFinanceType} from './models/finance/financeType';
+import {createFinance, getDetailFinance, getFinance} from './models/finance/finance';
 
 const router = express.Router();
 
@@ -97,5 +100,13 @@ router.get('/report/product-transaction', authenticateJWT, getReportProductTrans
 router.get('/report/stock-product', authenticateJWT, getReportStockProduct);
 router.get('/report/product-sale', authenticateJWT, getReportProductSale);
 router.get('/report/dashboard', authenticateJWT, getReportDashboard);
+
+router.get('/report/finance', authenticateJWT, getReportFinance);
+router.get('/report/finances', getFinance);
+router.get('/report/finances/detail', getDetailFinance);
+router.post('/report/finance/add', authenticateJWT, createFinance);
+
+router.get('/report/finance-type', authenticateJWT, getFinanceType);
+router.post('/report/finance-type/add', authenticateJWT, createFinanceType);
 
 export default router;
