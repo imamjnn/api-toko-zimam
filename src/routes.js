@@ -39,7 +39,7 @@ import {
 import {getReportDashboard} from './models/report/resportDashboard';
 import {getReportFinance} from './models/report/reportFinance';
 import {createFinanceType, getFinanceType} from './models/finance/financeType';
-import {createFinance, getDetailFinance, getFinance} from './models/finance/finance';
+import {createFinance, deleteFinance, getDetailFinance, getFinance} from './models/finance/finance';
 
 const router = express.Router();
 
@@ -104,6 +104,7 @@ router.get('/report/dashboard', authenticateJWT, getReportDashboard);
 router.get('/report/finance', authenticateJWT, getReportFinance);
 router.get('/report/finances', getFinance);
 router.get('/report/finances/detail', getDetailFinance);
+router.get('/report/finances/delete', deleteFinance);
 router.post('/report/finance/add', authenticateJWT, createFinance);
 
 router.get('/report/finance-type', authenticateJWT, getFinanceType);

@@ -80,3 +80,16 @@ export const getDetailFinance = async (req, res) => {
     res.json({status: 0, message: 'error'});
   }
 };
+
+export const deleteFinance = async (req, res) => {
+  const {id} = req.query;
+  try {
+    const delFinance = await db('finances').where('id', id).del();
+    const delExpense = await db('finance_expense').where('finance_id', id).del();
+    console.log('success deleteFinance', delFinance);
+    res.json({status: 1, message: 'success'});
+  } catch (err) {
+    console.log(err);
+    res.json({status: 0, message: 'err'});
+  }
+};

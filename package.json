@@ -1,6 +1,6 @@
 {
   "name": "api-toko-zimam",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "api toko",
   "main": "app.js",
   "scripts": {
