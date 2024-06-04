@@ -4,7 +4,7 @@ import {getUserInfo} from '../../utils/formatter';
 
 export const createPurchaseTransaction = async (req, res) => {
   const user = getUserInfo(req.headers.authorization);
-  const {nominal_cash, status, member_id, date_from_device} = req.body;
+  const {nominal_cash, status, member_id} = req.body;
   const data = {
     total_price: 0,
     total_qty: 0,
@@ -14,7 +14,7 @@ export const createPurchaseTransaction = async (req, res) => {
     status,
     member_id,
     user_id: user.id,
-    date_from_device,
+    // date_from_device,
   };
   try {
     const codeTrans = `TR-${moment().format('x')}`;
