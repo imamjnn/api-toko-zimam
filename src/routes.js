@@ -40,6 +40,7 @@ import {getReportDashboard} from './models/report/resportDashboard';
 import {getReportFinance} from './models/report/reportFinance';
 import {createFinanceType, getFinanceType} from './models/finance/financeType';
 import {createFinance, deleteFinance, getDetailFinance, getFinance} from './models/finance/finance';
+import {getReportAssetStock} from './models/report/reportAssetStock';
 
 const router = express.Router();
 
@@ -109,5 +110,7 @@ router.post('/report/finance/add', authenticateJWT, createFinance);
 
 router.get('/report/finance-type', authenticateJWT, getFinanceType);
 router.post('/report/finance-type/add', authenticateJWT, createFinanceType);
+
+router.get('/report/asset-stock', getReportAssetStock);
 
 export default router;

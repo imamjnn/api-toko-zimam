@@ -13,6 +13,7 @@ export const getProduct = async (req, res) => {
     unit = '',
     startDate = moment('2023-01-12').toDate(),
     endDate = moment().toDate(),
+    minStock = 99999,
   } = req.query;
   const offset = (page < 1 ? 1 : page - 1) * limit;
   try {
@@ -32,6 +33,7 @@ export const getProduct = async (req, res) => {
       .where('product.status', 1)
       .where('product.created', '>=', startDate)
       .where('product.created', '<', endDate)
+      .where('product.stock', '<=', minStock)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
@@ -46,6 +48,7 @@ export const getProduct = async (req, res) => {
       .where('product.status', 1)
       .where('product.created', '>=', startDate)
       .where('product.created', '<', endDate)
+      .where('product.stock', '<', minStock)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
