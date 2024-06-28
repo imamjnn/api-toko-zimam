@@ -48,7 +48,7 @@ export const getProduct = async (req, res) => {
       .where('product.status', 1)
       .where('product.created', '>=', startDate)
       .where('product.created', '<', endDate)
-      .where('product.stock', '<', minStock)
+      .where('product.stock', '<=', minStock)
       .where(a =>
         a
           .orWhereILike('product.name', `%${search}%`)
