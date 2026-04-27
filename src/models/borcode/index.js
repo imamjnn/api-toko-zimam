@@ -1,6 +1,9 @@
 import {getAllPrinters, getDefaultPrinter, getPrinterByName} from '@printers/printers';
 import {exec} from 'child_process';
 import {formatRupiah} from '../../utils/formatter';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 export const getPrinter = async (req, res) => {
   const printers = await getAllPrinters();
@@ -55,7 +58,24 @@ CLS
       tspl += `PRINT 1\n`;
     }
 
-    exec(`echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`, (err, stdout, stderr) => {
+    // Nama printer share (sesuaikan dengan nama yang Anda buat di tab Sharing)
+    const shareName = 'XP420B';
+    const computerName = 'localhost'; // atau nama komputer Anda
+
+    const tempFilePath = path.join(os.tmpdir(), `barcode_${Date.now()}.txt`);
+
+    // Pastikan file temp ditulis dengan encoding 'ascii' atau 'utf8' tanpa BOM
+    fs.writeFileSync(tempFilePath, tspl, 'utf8');
+
+    const isWindows = process.platform === 'win32';
+
+    // Gunakan perintah copy /b (binary) ke path jaringan lokal printer
+    const command = isWindows
+      ? `copy /b "${tempFilePath}" "\\\\${computerName}\\${shareName}"`
+      : `echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`;
+
+    exec(command, (err, stdout, stderr) => {
+      if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
       if (err) {
         return res.json({
           status: 'error',
