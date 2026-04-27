@@ -1,6 +1,12 @@
 import {getAllPrinters, getDefaultPrinter} from '@printers/printers';
 import {exec} from 'child_process';
+import {promisify} from 'util';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import {formatRupiah} from '../../utils/formatter';
+
+const execAsync = promisify(exec);
 
 export const getPrinter = async (req, res) => {
   const printers = await getAllPrinters();
@@ -55,21 +61,36 @@ CLS
       tspl += `PRINT 1\n`;
     }
 
-    exec(`echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`, (err, stdout, stderr) => {
-      if (err) {
-        return res.json({
-          status: 'error',
-          message: err.message,
-        });
-      }
+    // Detect OS dan gunakan command yang sesuai
+    const platform = os.platform();
+    let printCommand;
 
-      return res.json({
-        status: 'success',
-        message: 'Print TSPL berhasil',
-        defaultPrinter,
-      });
+    if (platform === 'win32') {
+      // Windows: save to temp file dan gunakan powershell
+      const tempFile = path.join(os.tmpdir(), `tspl_${Date.now()}.txt`);
+      fs.writeFileSync(tempFile, tspl);
+
+      // Escape quotes untuk PowerShell
+      const printerName = defaultPrinter.systemName.replace(/"/g, '\\"');
+      printCommand = `powershell -Command "Get-Content '${tempFile}' | Out-Printer -Name '${printerName}'"`;
+    } else {
+      // macOS/Linux: gunakan lpr
+      printCommand = `echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`;
+    }
+
+    console.log('Platform:', platform);
+    console.log('Print command:', printCommand);
+
+    await execAsync(printCommand);
+
+    return res.json({
+      status: 'success',
+      message: 'Print TSPL berhasil',
+      defaultPrinter,
+      platform,
     });
   } catch (error) {
+    console.error('Print error:', error);
     return res.json({
       status: 'error',
       message: error.message,
