@@ -23,3 +23,7 @@ export const checkUnit = name => {
   const unit = name === 'Lusin' ? 12 : name === 'Kodi' ? 20 : 1;
   return unit;
 };
+
+export const formatRupiah = number => {
+  return 'Rp' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};

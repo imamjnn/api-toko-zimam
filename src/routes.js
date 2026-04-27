@@ -41,7 +41,7 @@ import {getReportFinance} from './models/report/reportFinance';
 import {createFinanceType, getFinanceType} from './models/finance/financeType';
 import {createFinance, deleteFinance, getDetailFinance, getFinance} from './models/finance/finance';
 import {getReportAssetStock} from './models/report/reportAssetStock';
-import {printBarcode} from './models/borcode';
+import {getPrinter, printBarcode, testPrint, testPrint2} from './models/borcode';
 
 const router = express.Router();
 
@@ -114,6 +114,7 @@ router.post('/report/finance-type/add', authenticateJWT, createFinanceType);
 
 router.get('/report/asset-stock', getReportAssetStock);
 
-router.get('/barcode', printBarcode);
+router.get('/printers', getPrinter);
+router.post('/barcode/print', printBarcode);
 
 export default router;
