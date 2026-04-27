@@ -6,6 +6,14 @@ import path from 'path';
 import os from 'os';
 import {formatRupiah} from '../../utils/formatter';
 
+// Import printer library untuk Windows support
+let printerLib;
+try {
+  printerLib = require('printer');
+} catch (e) {
+  console.log('printer lib not installed, will use fallback');
+}
+
 const execAsync = promisify(exec);
 
 export const getPrinter = async (req, res) => {
@@ -61,40 +69,55 @@ CLS
       tspl += `PRINT 1\n`;
     }
 
-    // Detect OS dan gunakan command yang sesuai
+    // Detect OS dan gunakan method yang sesuai
     const platform = os.platform();
-    let printCommand;
 
     if (platform === 'win32') {
-      // Windows: save to temp file dan gunakan powershell
-      const tempFile = path.join(os.tmpdir(), `tspl_${Date.now()}.txt`);
-      fs.writeFileSync(tempFile, tspl);
+      // Windows: gunakan printer library
+      if (!printerLib) {
+        throw new Error('printer library belum install. Jalankan: npm install printer');
+      }
 
-      // Escape quotes untuk PowerShell
-      const printerName = defaultPrinter.systemName.replace(/"/g, '\\"');
-      printCommand = `powershell -Command "Get-Content '${tempFile}' | Out-Printer -Name '${printerName}'"`;
+      const printerName = defaultPrinter.systemName;
+
+      // Print menggunakan printer library
+      printerLib.printDirect({
+        data: tspl,
+        printer: printerName,
+        type: 'RAW', // Important: send as RAW data
+        success: () => {
+          console.log('Print success');
+        },
+        error: err => {
+          console.error('Print error:', err);
+          throw err;
+        },
+      });
+
+      // Wait sedikit untuk ensure print sudah dikirim
+      await new Promise(resolve => setTimeout(resolve, 500));
     } else {
       // macOS/Linux: gunakan lpr
-      printCommand = `echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`;
+      const printCommand = `echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`;
+      console.log('Platform:', platform);
+      console.log('Printer:', defaultPrinter.systemName);
+
+      await execAsync(printCommand);
     }
-
-    console.log('Platform:', platform);
-    console.log('Print command:', printCommand);
-
-    await execAsync(printCommand);
 
     return res.json({
       status: 'success',
       message: 'Print TSPL berhasil',
-      defaultPrinter,
-      platform,
+      printer: defaultPrinter.systemName,
+      platform: os.platform(),
     });
   } catch (error) {
     console.error('Print error:', error);
-    return res.json({
+    return res.status(500).json({
       status: 'error',
       message: error.message,
-      defaultPrinter,
+      printer: defaultPrinter?.systemName,
+      platform: os.platform(),
     });
   }
 };
