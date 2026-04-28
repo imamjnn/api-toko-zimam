@@ -17,7 +17,15 @@ export const getPrinter = async (req, res) => {
 };
 
 export const printBarcode = async (req, res) => {
-  const {products, leftColX = 20, rightColX = 360, height = 20, width = 83, gap = 2} = req.body;
+  const {
+    products,
+    leftColX = 20,
+    rightColX = 360,
+    height = 20,
+    width = 83,
+    gap = 2,
+    printerShareName = 'XP420B',
+  } = req.body;
 
   const defaultPrinter = await getDefaultPrinter();
 
@@ -58,7 +66,6 @@ export const printBarcode = async (req, res) => {
     }
 
     // Nama printer share (sesuaikan dengan nama yang Anda buat di tab Sharing)
-    const shareName = 'XP420B';
     const computerName = 'localhost'; // atau nama komputer Anda
 
     const tempFilePath = path.join(os.tmpdir(), `barcode_${Date.now()}.txt`);
@@ -70,7 +77,7 @@ export const printBarcode = async (req, res) => {
 
     // Gunakan perintah copy /b (binary) ke path jaringan lokal printer
     const command = isWindows
-      ? `copy /b "${tempFilePath}" "\\\\${computerName}\\${shareName}"`
+      ? `copy /b "${tempFilePath}" "\\\\${computerName}\\${printerShareName}"`
       : `echo '${tspl}' | lpr -P "${defaultPrinter.systemName}" -o raw`;
 
     exec(command, (err, stdout, stderr) => {
