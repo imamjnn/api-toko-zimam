@@ -27,3 +27,8 @@ export const checkUnit = name => {
 export const formatRupiah = number => {
   return 'Rp' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
+
+export const formatText = (text, maxLength = 20) => {
+  if (!text) return '';
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};

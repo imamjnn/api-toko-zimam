@@ -1,6 +1,6 @@
 import {getAllPrinters, getDefaultPrinter, getPrinterByName} from '@printers/printers';
 import {exec} from 'child_process';
-import {formatRupiah} from '../../utils/formatter';
+import {formatRupiah, formatText} from '../../utils/formatter';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -17,24 +17,23 @@ export const getPrinter = async (req, res) => {
 };
 
 export const printBarcode = async (req, res) => {
-  const {products} = req.body;
+  const {products, leftColX = 20, rightColX = 360, height = 20, width = 83, gap = 2} = req.body;
 
   const defaultPrinter = await getDefaultPrinter();
 
   try {
     let tspl = `
-SIZE 80 mm, 20 mm
-GAP 1 mm, 0 mm
-DIRECTION 1,0
-REFERENCE 0,0
-OFFSET 0 mm
-DENSITY 10
-CLS
-`;
+    SIZE ${width} mm, ${height} mm
+    GAP ${gap} mm, 0 mm
+    DIRECTION 1,0
+    REFERENCE 0,0
+    OFFSET 0 mm
+    DENSITY 10
+    CLS
+    `;
 
-    const leftColX = 20; // Koordinat X kolom kiri
-    const rightColX = 360; // Koordinat X kolom kanan (sesuaikan jika perlu)
-
+    // const leftColX = 20; // Koordinat X kolom kiri
+    // const rightColX = 360; // Koordinat X kolom kanan (sesuaikan jika perlu)
     for (let i = 0; i < products.length; i += 2) {
       const p1 = products[i];
       const p2 = products[i + 1];
@@ -44,14 +43,14 @@ CLS
       // Label Kiri
       if (p1) {
         tspl += `BARCODE ${leftColX},10,"128",56,2,0,2,2,"${p1.product_code}"\n`;
-        tspl += `TEXT ${leftColX},96,"1",0,1,1,"${p1.name.substring(0, 20)}"\n`;
+        tspl += `TEXT ${leftColX},96,"1",0,1,1,"${formatText(p1.name, 20)}"\n`;
         tspl += `TEXT ${leftColX},120,"1",0,2,2,"${formatRupiah(p1.price)}"\n`;
       }
 
       // Label Kanan
       if (p2) {
         tspl += `BARCODE ${rightColX},10,"128",56,2,0,2,2,"${p2.product_code}"\n`;
-        tspl += `TEXT ${rightColX},96,"1",0,1,1,"${p2.name.substring(0, 20)}"\n`;
+        tspl += `TEXT ${rightColX},96,"1",0,1,1,"${formatText(p2.name, 20)}"\n`;
         tspl += `TEXT ${rightColX},120,"1",0,2,2,"${formatRupiah(p2.price)}"\n`;
       }
 
@@ -86,7 +85,7 @@ CLS
       return res.json({
         status: 'success',
         message: 'Print TSPL berhasil',
-        defaultPrinter,
+        tspl,
       });
     });
   } catch (error) {
